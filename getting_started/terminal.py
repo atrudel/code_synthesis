@@ -1,3 +1,5 @@
+# Initial source was developed by https://github.com/yamadapc
+
 class bcolors:
     """ bcolors: Facilitates printing colors on terminals with support for
     escape sequences. It was borrowed from the following stackoverflow answer:

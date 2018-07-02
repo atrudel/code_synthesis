@@ -1,3 +1,5 @@
+# Intial game source code is from https://github.com/yamadapc
+
 import sys
 from terminal import *
 
