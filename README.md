@@ -15,15 +15,21 @@
 - The player that has the most living cells after 1000 cycles wins the game
 - If both players have an equal amount of cells it is a draw
 
+### Input/Output of the Game
+- The game receives two 64x64 programs and are placed in the initial game
+- The game runs for 1000 cycles 
+- The game outputs the number of live cells for each player
+
 ## Getting Started Directory
 Under the getting started dir, we'll develop a minimal viable game to start developing players.
 
 ### Todo
 - [ ] The main game of life game
 - [ ] Adapt the main game for two players
-- [ ] Create a wrapper to use in deep learning models
-
 
 ## Core Development Directory
-
 Here, we'll develop an optimized version 
+- [ ] The main game of life game
+- [ ] Adapt the main game for two players
+- [ ] A GUI that looks like the original game of life with one color for each player
+- [ ] Be able to jump to a specific cycle or go step by step
