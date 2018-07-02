@@ -12,8 +12,14 @@
 - The player that has the most surrounding cells, owns the new cell that is born
 - If both players have an equal amount of surrounding cells, each player has a random 50/50 chance of owning the new cell
 - Killing cells follows them Game of life core rules
-- The player that has the most living cells after 1000 cycles wins the game
-- If both players have an equal amount of cells it is a draw
+- Score
+  - Each game is played in two rounds until cycle 1000, the players switch position after round 1
+  - For each round, each player gets their living cells minus their opponents cells
+  - The score is calculated at cycle 1000
+  - Each player gets a total score by adding their score for each round
+  - The player with the highest total score wins
+    - If they have the same total score, the player with the highest round score wins
+    - If they have the same highest score, a player is randomly picked as a winner
 
 ### Input/Output of the Game
 - The game receives two 64x64 programs and are placed in the initial game
