@@ -10,7 +10,6 @@
 - The game board is 512 x 512
 - Each player gets a 64x64 grid to develop their program 
 - The player that has the most surrounding cells, owns the new cell that is born
-- If both players have an equal amount of surrounding cells, each player has a random 50/50 chance of owning the new cell
 - Killing cells follows them Game of life core rules
 - Score
   - Each game is played in two rounds until cycle 1000, the players switch position after round 1
