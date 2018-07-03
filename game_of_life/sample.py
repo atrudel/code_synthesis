@@ -1,6 +1,9 @@
 import curses
-import gol
+import sys
 from time import sleep
+
+import gol
+import rle
 
 def draw_border(stdscr, width, height):
 	stdscr.move(0, 0)
@@ -35,11 +38,18 @@ def update_grid(stdscr, game):
 
 def start(stdscr):
 	#curses.curs_set(0)
-	stdscr.attron(curses.A_BLINK)
 	stdscr.clear()
 
 	size = stdscr.getmaxyx()
-	game = gol.GameOfLife(size[1] - 2, size[0] - 3)
+	game = []
+	if (len(sys.argv)) == 2:
+		patt = rle.Pattern(sys.argv[1])
+		game = gol.GameOfLife(patt.width, patt.height)
+		game.set_grid(patt.data)
+		size = [patt.height + 3, patt.width + 2]
+	else:
+		game = gol.GameOfLife(size[1] - 2, size[0] - 3)
+
 	guide = "s: set mode, r: run, q: quit $ "
 
 	draw_border(stdscr, size[1], size[0] - 1)
@@ -94,11 +104,19 @@ def start(stdscr):
 		if cmd == "q":
 			break
 		elif cmd == "r":
-			steps = prompt("number of steps: ")
-			for i in range(int(steps)):
-				game.run_steps(1)
-				update_grid(stdscr, game)
-				sleep(0.1)
+			try:
+				while True:
+					steps = int(prompt("number of steps: "))
+					for i in range(int(steps)):
+						game.run_steps(1)
+						update_grid(stdscr, game)
+						stdscr.move(size[0] - 1, 0)
+						stdscr.clrtoeol()
+						stdscr.move(size[0] - 1, 0)
+						stdscr.addstr("{}/{}".format(i, steps))
+						sleep(0.1)
+			except:
+				pass
 
 		elif cmd == "s":
 			setmode()
