@@ -15,7 +15,7 @@ class GameOfLife:
 	def set_grid(self, grid):
 		if not isinstance(grid, bytearray):
 			raise TypeError("set_grid requires a bytearray as argument")
-		if len(grid) != self.width * self.height:
+		if len(grid) != self._width * self._height:
 			raise ValueError("grid size doesn't match the game size")
 		self._grid = grid
 
@@ -43,25 +43,25 @@ def	step(grid, next_grid, width, height):
 		for x in range(width):
 			n1 = 0
 			n2 = 0
-			if x > 0 and y > 0:		#top left
+			if x > 0 and y > 0:			#top left
 				b = ptr[(y - 1) * w + (x - 1)]
 				if b & 1:
 					n1 += 1
 				elif b & 2:
 					n2 += 1
-			if y > 0:				#top
+			if y > 0:					#top
 				b = ptr[(y - 1) * w + x]
 				if b & 1:
 					n1 += 1
 				elif b & 2:
 					n2 += 1
-			if x < w and y > 0:	#top right
+			if x < w and y > 0:			#top right
 				b = ptr[(y - 1) * w + (x + 1)]
 				if b & 1:
 					n1 += 1
 				elif b & 2:
 					n2 += 1
-			if x > 0:				#left
+			if x > 0:					#left
 				b = ptr[y * w + (x - 1)]
 				if b & 1:
 					n1 += 1
@@ -85,7 +85,7 @@ def	step(grid, next_grid, width, height):
 					n1 += 1
 				elif b & 2:
 					n2 += 1
-			if x < w - 1 and y < h - 1:		#bottom right
+			if x < w - 1 and y < h - 1:	#bottom right
 				b = ptr[(y + 1) * w + (x + 1)]
 				if b & 1:
 					n1 += 1
