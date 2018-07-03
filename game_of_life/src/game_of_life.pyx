@@ -1,32 +1,35 @@
 class GameOfLife:
 	def __init__(self, width = 0, height = 0):
-		self.width = width
-		self.height = height
-		self.cycle = 0
+		self._width = width
+		self._height = height
+		self._cycle = 0
 		#the cell information are stored as a byte
 		#bit 0 - cell owned by first player
 		#bit 1 - cell owned by second player
-		self.grid = bytearray(width * height)
-		self.next_grid = bytearray(width * height)
+		self._grid = bytearray(width * height)
+		self._next_grid = bytearray(width * height)
 
 	def set_point(self, x, y, value):
-		self.grid[y * self.width + x] = value
+		self._grid[y * self._width + x] = value
 
 	def set_grid(self, grid):
 		if not isinstance(grid, bytearray):
 			raise TypeError("set_grid requires a bytearray as argument")
 		if len(grid) != self.width * self.height:
 			raise ValueError("grid size doesn't match the game size")
-		self.grid = grid
+		self._grid = grid
 
-	def get_grid(self):
-		return self.grid
+	def grid(self):
+		return self._grid
 
 	def run_steps(self, steps):
-		self.cycle += steps
+		self._cycle += steps
 		for i in range(steps):
-			step(self.grid, self.next_grid, self.width, self.height)
-			self.grid, self.next_grid = self.next_grid, self.grid
+			step(self._grid, self._next_grid, self._width, self._height)
+			self._grid, self._next_grid = self._next_grid, self._grid
+
+	def size(self):
+		return (self._width, self._height)
 
 def	step(grid, next_grid, width, height):
 	cdef char *ptr = grid
@@ -95,7 +98,7 @@ def	step(grid, next_grid, width, height):
 				else:
 					next[y * w + x] = ptr[y * w + x]
 			else:					#if dead
-				if n1 + n2 >= 2 and n1 + n2 <= 3:
+				if n1 + n2 == 3:
 					if n1 > n2:
 						next[y * w + x] = 1
 					else:
