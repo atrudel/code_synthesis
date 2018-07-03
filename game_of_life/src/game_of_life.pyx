@@ -12,6 +12,13 @@ class GameOfLife:
 	def set_point(self, x, y, value):
 		self.grid[y * self.width + x] = value
 
+	def set_grid(self, grid):
+		if not isinstance(grid, bytearray):
+			raise TypeError("set_grid requires a bytearray as argument")
+		if len(grid) != self.width * self.height:
+			raise ValueError("grid size doesn't match the game size")
+		self.grid = grid
+
 	def get_grid(self):
 		return self.grid
 
