@@ -38,3 +38,7 @@ Here, we'll develop an optimized version
 - [ ] Adapt the main game for two players
 - [ ] A GUI that looks like the original game of life with one color for each player
 - [ ] Be able to jump to a specific cycle or go step by step
+
+## Build instructions
+To build this project you need to install Cython
+- `$ pip3 install Cython` (requires root or use a virtualenv)

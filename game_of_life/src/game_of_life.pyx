@@ -1,4 +1,4 @@
-class GameContainer:
+class GameOfLife:
 	def __init__(self, width = 0, height = 0):
 		self.width = width
 		self.height = height
@@ -16,19 +16,23 @@ class GameContainer:
 		return self.grid
 
 	def run_steps(self, steps):
-		run_steps(steps, self.grid, self.next_grid, self.width, self.height)
+		self.cycle += steps
+		for i in range(steps):
+			step(self.grid, self.next_grid, self.width, self.height)
+			self.grid, self.next_grid = self.next_grid, self.grid
 
 def	step(grid, next_grid, width, height):
-	cdef char *ptr = grid, *next = next_grid
+	cdef char *ptr = grid
+	cdef char *next = next_grid
 	cdef unsigned int x, y, w, h, n1, n2
 	cdef char b
 
 	w = width
 	h = height
-	n1 = 0
-	n2 = 0
 	for y in range(height):
 		for x in range(width):
+			n1 = 0
+			n2 = 0
 			if x > 0 and y > 0:		#top left
 				b = ptr[(y - 1) * w + (x - 1)]
 				if b & 1:
@@ -53,26 +57,26 @@ def	step(grid, next_grid, width, height):
 					n1 += 1
 				elif b & 2:
 					n2 += 1
-			if x < w:				#right
+			if x < w - 1:				#right
 				b = ptr[y * w + (x + 1)]
 				if b & 1:
 					n1 += 1
 				elif b & 2:
 					n2 += 1
-			if x > 0 and y < h:		#bottom left
+			if x > 0 and y < h - 1:		#bottom left
 				b = ptr[(y + 1) * w + (x - 1)]
 				if b & 1:
 					n1 += 1
 				elif b & 2:
 					n2 += 1
-			if y < h:				#bottom
-				b = ptr[(y - 1) * w + (x - 1)]
+			if y < h - 1:				#bottom
+				b = ptr[(y + 1) * w + x]
 				if b & 1:
 					n1 += 1
 				elif b & 2:
 					n2 += 1
-			if x < w and y < h:		#bottom right
-				b = ptr[(y - 1) * w + (x - 1)]
+			if x < w - 1 and y < h - 1:		#bottom right
+				b = ptr[(y + 1) * w + (x + 1)]
 				if b & 1:
 					n1 += 1
 				elif b & 2:
@@ -91,8 +95,3 @@ def	step(grid, next_grid, width, height):
 						next[y * w + x] = 2
 				else:
 					next[y * w + x] = ptr[y * w + x]
-
-
-def run_steps(steps, grid, next_grid, width, height):
-	for i in range(steps):
-		step(grid, next_grid, width, height)
