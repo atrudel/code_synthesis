@@ -28,3 +28,12 @@
 ## Build instructions
 To build this project you need to install Cython
 - `$ pip3 install Cython` (requires root or use a virtualenv)
+
+Then to compile the module
+- `cd game_of_life && ./compile.sh`
+
+The last command creates a file called "gol.[some stuff].so"
+That is our compiled module that you can import in python with
+`import gol`
+
+Inside ./game_of_life you can find a sample program
