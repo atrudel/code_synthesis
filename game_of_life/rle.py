@@ -11,21 +11,19 @@ class Pattern:
 		data = data[:data.find("!")]
 		data = data.split("$")
 		self.data = bytearray()
-		offset = 0
 		for line in data:
-			arr = line_to_byte(line)
-			arr.extend(bytearray(self.width - len(arr)))
+			arr = line_to_byte(line, self.width)
 			self.data.extend(arr)
 
-
-def line_to_byte(line):
+def line_to_byte(line, width):
 	b = bytearray()
 	last = 0
+	i = 0
 	for i in range(len(line)):
-		if line[i] != "b" and line[i] != "o":
+		if line[i].isdigit():
 			continue
 
-		if line[i] == "b":
+		elif line[i] == "b":
 			data = 0
 		else:
 			data = 1
@@ -35,4 +33,10 @@ def line_to_byte(line):
 			count = int(line[last:i])
 		b.extend(bytearray([data] * count))
 		last = i + 1
+
+	b.extend(bytearray(width - len(b)))
+	i += 1
+	if i > last:
+		count = int(line[last:i]) - 1
+		b.extend(bytearray(width * count))
 	return b
