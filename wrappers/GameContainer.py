@@ -36,13 +36,13 @@ class GameContainer:
             player2 = np.rot90(np.copy(self.player2), k=2) * 2
             player2_padded = self.pad_vertically(player2)
         else:
-            dummy = np.zeros(self.player1.shape)
+            dummy = np.zeros(self.player1.shape, dtype=np.int8)
             player2_padded = self.pad_vertically(dummy)
 
         # Pad the two resulting blocks horizontally to form the final grid
         grid = self.pad_horizontally(player1_padded, player2_padded)
         self.gol.set_grid(bytearray(grid))
-        run_steps(num_steps)
+        self.run_steps(num_steps)
 
     def run_steps(self, num_steps):
         try:
@@ -59,8 +59,8 @@ class GameContainer:
         top = (total_height - state.shape[0]) // 2
         bottom = total_height - top - state.shape[0]
 
-        top_padding = np.zeros((top, total_width))
-        bottom_padding = np.zeros((bottom, total_width))
+        top_padding = np.zeros((top, total_width), dtype=np.int8)
+        bottom_padding = np.zeros((bottom, total_width), dtype=np.int8)
         return np.vstack((top_padding, state, bottom_padding))
 
     def pad_horizontally(self, player1, player2):
@@ -71,7 +71,7 @@ class GameContainer:
         extremity = (total_width - player1.shape[1] - player2.shape[1]) // 3
         middle = total_width - player1.shape[1] - player2.shape[1] - 2 * extremity
 
-        extremity_padding = np.zeros((total_height, extremity))
-        middle_padding = np.zeros((total_height, middle))
+        extremity_padding = np.zeros((total_height, extremity), dtype=np.int8)
+        middle_padding = np.zeros((total_height, middle), dtype=np.int8)
         return np.hstack((extremity_padding, player1, middle_padding,
                         player2, extremity_padding))
