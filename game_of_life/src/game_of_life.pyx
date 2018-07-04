@@ -10,6 +10,8 @@ class GameOfLife:
 		self._next_grid = bytearray(width * height)
 
 	def set_point(self, x, y, value):
+		if x < 0 or x >= self._width or y < 0 or x >= self._height:
+			raise ValueError("coordinates out of bounds ({}, {})".format(x, y))
 		self._grid[y * self._width + x] = value
 
 	def set_grid(self, grid):
