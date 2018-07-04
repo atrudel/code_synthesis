@@ -1,14 +1,21 @@
-def turn_program_into_file(program, player_size, experiment_name, author, comments, dir_name):
+def turn_program_into_file(program, filename="program.rle", name="", author="", comments=""):
     
-    file = "#N " + experiment_name + "\n"
+    """ Saves a player program, a numpy array, into the RLE text format. 
+    Here are more details about the format: http://www.conwaylife.com/wiki/RLE
+    """
+    
+    player_width = program.shape[0]
+    player_height = program.shape[1]
+      
+    file = "#N " + name + "\n"
     file += "#C " + comments + "\n"
     file += "#O " + author + "\n"
-    file += "x = " + str(player_size) + ", y= " + str(player_size) + "\n"
+    file += "x = " + str(player_width) + ", y= " + str(player_height) + "\n"
     
     linebreak = 0
-    for i in range(player_size):
+    for i in range(player_height):
         counter = 1
-        for k in range(player_size - 1):
+        for k in range(player_width - 1):
             if program[i][k] == 0:
                 data = "b"
             else:
@@ -19,7 +26,7 @@ def turn_program_into_file(program, player_size, experiment_name, author, commen
             else:
                 data_2 = "o"
             
-            if data != data_2 or k == (player_size - 2):
+            if data != data_2 or k == (player_width - 2):
                 if data == data_2:
                     counter += 1
                 
@@ -28,7 +35,7 @@ def turn_program_into_file(program, player_size, experiment_name, author, commen
                     linebreak += len(str(counter)) - 1
                 
                 file += data
-                if k == (player_size - 2) and data != data_2:
+                if k == (player_width - 2) and data != data_2:
                     file += data_2
                 
                 linebreak += 1
@@ -42,7 +49,6 @@ def turn_program_into_file(program, player_size, experiment_name, author, commen
         file += "$"
         linebreak += 1
     file += "!"
-    print(file)
-    f = open(experiment_name + ".rle", 'w') 
+    f = open(filename, 'w') 
     f.write(str(file))
     f.close() 
