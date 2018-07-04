@@ -7,17 +7,10 @@ class GameContainer:
         self.player1 = None
         self.player2 = None
 
-    def add_players(self, player1, player2=None):
+    def add_players(self, player1=None, player2=None):
         ''' Fills the two player slots '''
-        if self.player1 is None:
-            self.player1 = player1
-            self.player2 = player2
-        elif self.player2 is None:
-            self.player2 = player1
-            if player2 is not None:
-                raise ValueError("Game already contains one player. Can't add two more.")
-        else:
-            raise ValueError("Game already contains two players. Can't add any more.")
+        self.player1 = player1
+        self.player2 = player2
 
     def launch(self, num_steps=0):
         ''' Creates the board, inserts the players' intial states into the grid
