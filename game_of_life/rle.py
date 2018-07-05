@@ -12,8 +12,6 @@ class Pattern:
 		data = data.split("$")
 		self.data = bytearray()
 		for line in data:
-			if len(line) == 0:
-				raise SyntaxError("{}: malformed file".format(filename))
 			arr = line_to_byte(line, self.width)
 			self.data.extend(arr)
 
@@ -21,23 +19,24 @@ def line_to_byte(line, width):
 	b = bytearray()
 	last = 0
 	i = 0
-	for i in range(len(line)):
-		if line[i].isdigit():
-			continue
+	if len(line) != 0:
+		for i in range(len(line)):
+			if line[i].isdigit():
+				continue
 
-		elif line[i] == "b":
-			data = 0
-		else:
-			data = 1
+			elif line[i] == "b":
+				data = 0
+			else:
+				data = 1
 
-		count = 1
-		if i > last:
-			count = int(line[last:i])
-		b.extend(bytearray([data] * count))
-		last = i + 1
+			count = 1
+			if i > last:
+				count = int(line[last:i])
+			b.extend(bytearray([data] * count))
+			last = i + 1
+		i += 1
 
 	b.extend(bytearray(width - len(b)))
-	i += 1
 	if i > last:
 		count = int(line[last:i]) - 1
 		b.extend(bytearray(width * count))
