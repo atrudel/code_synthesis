@@ -46,8 +46,9 @@ def turn_program_into_file(program, filename="program.rle", name="", author="", 
                 counter = 0
                 
             counter += 1
-        file += "$"
         linebreak += 1
+        if i != player_height - 1:
+            file += "$"     
     file += "!"
     f = open(filename, 'w') 
     f.write(str(file))
