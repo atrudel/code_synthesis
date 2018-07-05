@@ -3,9 +3,9 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 
 extensions = [
-	Extension("gol", ["src/game_of_life.pyx"])
+	Extension("gol", ["src/gol.pyx"])
 ]
 
-setup(name='Hello world app',
+setup(name='Game of life',
       ext_modules=cythonize(extensions))
 
