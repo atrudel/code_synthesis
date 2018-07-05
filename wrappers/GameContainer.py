@@ -4,8 +4,6 @@ import numpy as np
 class GameContainer:
     def __init__(self, width=512, height=512):
         self.board_dims = (height, width)
-        self.player1 = None
-        self.player2 = None
 
     def add_players(self, player1=None, player2=None):
         ''' Fills the two player slots '''
@@ -34,6 +32,9 @@ class GameContainer:
 
         # Pad the two resulting blocks horizontally to form the final grid
         grid = self.pad_horizontally(player1_padded, player2_padded)
+        test = grid.flatten()
+        u, indices = np.unique(test, return_index=True)
+        
         self.gol.set_grid(bytearray(grid))
         self.run_steps(num_steps)
 
