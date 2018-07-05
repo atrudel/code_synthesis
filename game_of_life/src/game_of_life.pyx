@@ -10,7 +10,7 @@ class GameOfLife:
 		self._next_grid = bytearray(width * height)
 
 	def set_point(self, x, y, value):
-		if x < 0 or x >= self._width or y < 0 or x >= self._height:
+		if x < 0 or x >= self._width or y < 0 or y >= self._height:
 			raise ValueError("coordinates out of bounds ({}, {})".format(x, y))
 		self._grid[y * self._width + x] = value
 
@@ -57,7 +57,7 @@ def	step(grid, next_grid, width, height):
 					n1 += 1
 				elif b & 2:
 					n2 += 1
-			if x < w and y > 0:			#top right
+			if x < w - 1 and y > 0:			#top right
 				b = ptr[(y - 1) * w + (x + 1)]
 				if b & 1:
 					n1 += 1
@@ -87,7 +87,7 @@ def	step(grid, next_grid, width, height):
 					n1 += 1
 				elif b & 2:
 					n2 += 1
-			if x < w - 1 and y < h - 1:	#bottom right
+			if x < (w - 1) and y < (h - 1):	#bottom right
 				b = ptr[(y + 1) * w + (x + 1)]
 				if b & 1:
 					n1 += 1
