@@ -20,10 +20,11 @@ def draw_border(stdscr, width, height):
 	stdscr.addstr(u"═" * (width - 2))
 	stdscr.addstr(u"╝")
 
-
 def update_grid(stdscr, game):
 	size = game.size()
 	cells = game.grid()
+	stdscr.move(0, 1)
+	stdscr.addstr("{}x{}".format(size[0], size[1]))
 	for y in range(size[1]):
 		stdscr.move(y + 1, 1)
 		for x in range(size[0]):
@@ -36,19 +37,33 @@ def update_grid(stdscr, game):
 				stdscr.addch(ord("."))
 	stdscr.refresh()
 
+def set_pattern(game, pattern, x_off, y_off):
+    grid = game.grid()
+    gridsize = game.size()
+    patsize = (pattern.width, pattern.height)
+
+    if (patsize[0] > gridsize[0]) or (patsize[1] > gridsize[1]) or \
+            x_off + patsize[0] > gridsize[0] or y_off + patsize[1] > gridsize[1]:
+        raise ValueError("pattern size too big")
+
+    for y in range(patsize[1]):
+        for x in range(patsize[0]):
+            grid[(y + y_off) * gridsize[0] + x + x_off] = \
+                    pattern.data[y * patsize[0] + x]
+
+    game.set_grid(grid)
+
 def start(stdscr):
 	#curses.curs_set(0)
 	stdscr.clear()
 
 	size = stdscr.getmaxyx()
-	game = []
+	game = gol.GameOfLife(size[1] - 2, size[0] - 3)
+
 	if (len(sys.argv)) == 2:
-		patt = rle.Pattern(sys.argv[1])
-		game = gol.GameOfLife(patt.width, patt.height)
-		game.set_grid(patt.data)
-		size = [patt.height + 3, patt.width + 2]
-	else:
-		game = gol.GameOfLife(size[1] - 2, size[0] - 3)
+                gsize = game.size()
+                patt = rle.Pattern(sys.argv[1])
+                set_pattern(game, patt, int((gsize[0] - patt.width) / 2), int((gsize[1] - patt.height) / 2))
 
 	guide = "s: set mode, r: run, q: quit $ "
 
@@ -114,7 +129,7 @@ def start(stdscr):
 						stdscr.clrtoeol()
 						stdscr.move(size[0] - 1, 0)
 						stdscr.addstr("{}/{}".format(i, steps))
-						sleep(0.1)
+						sleep(0.07)
 			except:
 				pass
 
