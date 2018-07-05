@@ -12,6 +12,8 @@ class Pattern:
 		data = data.split("$")
 		self.data = bytearray()
 		for line in data:
+			if len(line) == 0:
+				raise SyntaxError("{}: malformed file".format(filename))
 			arr = line_to_byte(line, self.width)
 			self.data.extend(arr)
 
