@@ -36,7 +36,7 @@ class GameContainer:
         test = grid.flatten()
         u, indices = np.unique(test, return_index=True)
 
-        self.gol.set_grid(bytearray(grid))
+        self.gol.set_grid(grid)
         self.run_steps(num_steps)
 
     def run_steps(self, num_steps):
