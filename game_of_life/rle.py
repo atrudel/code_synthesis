@@ -1,3 +1,5 @@
+import numpy as np
+
 class Pattern:
 	def __init__(self, filename):
 		f = open(filename)
@@ -10,15 +12,19 @@ class Pattern:
 		data = "".join(f.readlines()).replace("\n", "")
 		data = data[:data.find("!")]
 		data = data.split("$")
-		self.data = bytearray()
+		self.data = np.zeros(0, dtype=np.byte)
 		for line in data:
 			arr = line_to_byte(line, self.width)
-			self.data.extend(arr)
+			if len(self.data) == 0:
+				self.data = arr
+			else:
+				self.data = np.vstack((self.data, arr))
 
 def line_to_byte(line, width):
-	b = bytearray()
+	b = np.zeros((width,), dtype = np.byte)
 	last = 0
 	i = 0
+	pos = 0
 	if len(line) != 0:
 		for i in range(len(line)):
 			if line[i].isdigit():
@@ -32,12 +38,13 @@ def line_to_byte(line, width):
 			count = 1
 			if i > last:
 				count = int(line[last:i])
-			b.extend(bytearray([data] * count))
+			for k in range(count):
+				b[pos + k] = data
+			pos += count
 			last = i + 1
 		i += 1
 
-	b.extend(bytearray(width - len(b)))
 	if i > last:
 		count = int(line[last:i]) - 1
-		b.extend(bytearray(width * count))
+		b = np.vstack((b, np.zeros((count, width), dtype = np.byte)))
 	return b
