@@ -48,12 +48,9 @@ class GameOfLife(object):
 		return (self._width, self._height)
 
 @jit(cache=True)
-def	step(grid, next_grid, width, height):
-	w = width
-	h = height
-
-	for y in range(height):
-		for x in range(width):
+def	step(grid, next_grid, w, h):
+	for y in range(h):
+		for x in range(w):
 			n1 = 0
 			n2 = 0
 			if x > 0 and y > 0:			#top left
