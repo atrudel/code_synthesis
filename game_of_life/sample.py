@@ -28,7 +28,7 @@ def update_grid(stdscr, game):
 	for y in range(size[1]):
 		stdscr.move(y + 1, 1)
 		for x in range(size[0]):
-			c = cells[y * size[0] + x]
+			c = cells[y][x]
 			if c == 1:
 				stdscr.addch(ord("1"))
 			elif c == 2:
@@ -48,8 +48,8 @@ def set_pattern(game, pattern, x_off, y_off):
 
     for y in range(patsize[1]):
         for x in range(patsize[0]):
-            grid[(y + y_off) * gridsize[0] + x + x_off] = \
-                    pattern.data[y * patsize[0] + x]
+            grid[y + y_off][x + x_off] = \
+                    pattern.data[y][x]
 
     game.set_grid(grid)
 
