@@ -20,8 +20,8 @@ class GameOfLife(object):
 		#the cell information are stored as a byte
 		#bit 0 - cell owned by first player
 		#bit 1 - cell owned by second player
-		self._grid = np.zeros(shape=(self._width * self._height), dtype=np.byte)
-		self._next_grid = np.zeros(shape=(self._width * self._height), dtype=np.byte)
+		self._grid = np.zeros(shape=(self._height, self._width), dtype=np.byte)
+		self._next_grid = np.zeros(shape=(self._height, self._width), dtype=np.byte)
 
 	def set_point(self, x, y, value):
 		if x < 0 or x >= self._width or y < 0 or y >= self._height:
@@ -31,8 +31,8 @@ class GameOfLife(object):
 	def set_grid(self, grid):
 		#if not isinstance(grid, np.array):
 		#	raise TypeError("set_grid requires a numpy array as argument")
-		if len(grid) != self._width * self._height:
-			raise ValueError("grid size doesn't match the game size")
+		if grid.shape != self._grid.shape:
+			raise ValueError("grid size doesn't match the game size ({} and {}".format(grid.shape, self._grid.shape))
 		self._grid = grid
 
 	def grid(self):
@@ -57,64 +57,64 @@ def	step(grid, next_grid, width, height):
 			n1 = 0
 			n2 = 0
 			if x > 0 and y > 0:			#top left
-				b = grid[(y - 1) * w + (x - 1)]
+				b = grid[y - 1][x - 1]
 				if b == 1:
 					n1 += 1
 				elif b == 2:
 					n2 += 1
 			if y > 0:					#top
-				b = grid[(y - 1) * w + x]
+				b = grid[y - 1][x]
 				if b == 1:
 					n1 += 1
 				elif b == 2:
 					n2 += 1
 			if x < w - 1 and y > 0:		#top right
-				b = grid[(y - 1) * w + (x + 1)]
+				b = grid[y - 1][x + 1]
 				if b == 1:
 					n1 += 1
 				elif b == 2:
 					n2 += 1
 			if x > 0:					#left
-				b = grid[y * w + (x - 1)]
+				b = grid[y][x - 1]
 				if b == 1:
 					n1 += 1
 				elif b == 2:
 					n2 += 1
 			if x < w - 1:				#right
-				b = grid[y * w + (x + 1)]
+				b = grid[y][x + 1]
 				if b == 1:
 					n1 += 1
 				elif b == 2:
 					n2 += 1
 			if x > 0 and y < h - 1:		#bottom left
-				b = grid[(y + 1) * w + (x - 1)]
+				b = grid[y + 1][x - 1]
 				if b == 1:
 					n1 += 1
 				elif b == 2:
 					n2 += 1
 			if y < h - 1:				#bottom
-				b = grid[(y + 1) * w + x]
+				b = grid[y + 1][x]
 				if b == 1:
 					n1 += 1
 				elif b == 2:
 					n2 += 1
 			if x < (w - 1) and y < (h - 1):	#bottom right
-				b = grid[(y + 1) * w + (x + 1)]
+				b = grid[y + 1][x + 1]
 				if b == 1:
 					n1 += 1
 				elif b == 2:
 					n2 += 1
 
-			if grid[y * w + x]:		#if alive
+			if grid[y][x]:		#if alive
 				if n1 + n2 < 2 or n1 + n2 > 3:
-					next_grid[y * w + x] = 0
+					next_grid[y][x] = 0
 				else:
-					next_grid[y * w + x] = grid[y * w + x]
+					next_grid[y][x] = grid[y][x]
 			else:					#if dead
 				if n1 + n2 == 3:
 					if n1 > n2:
-						next_grid[y * w + x] = 1
+						next_grid[y][x] = 1
 					else:
-						next_grid[y * w + x] = 2
+						next_grid[y][x] = 2
 				else:
-					next_grid[y * w + x] = grid[y * w + x]
+					next_grid[y][x] = grid[y][x]
