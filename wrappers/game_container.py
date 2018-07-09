@@ -1,4 +1,5 @@
-from gol import GameOfLife
+import sys
+from game.game_of_life.gol import GameOfLife
 import numpy as np
 
 class GameContainer:
@@ -34,7 +35,7 @@ class GameContainer:
         grid = self.pad_horizontally(player1_padded, player2_padded)
         test = grid.flatten()
         u, indices = np.unique(test, return_index=True)
-        
+
         self.gol.set_grid(bytearray(grid))
         self.run_steps(num_steps)
 
