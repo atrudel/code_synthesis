@@ -1,49 +1,58 @@
 import sys
-from game.game_of_life.gol import GameOfLife
+from .GOLEngine import GOLEngine
 import numpy as np
+from numpy import byte
 
 class GameContainer:
     def __init__(self, width=512, height=512):
         self.board_dims = (height, width)
+        self.engine = None
+        self.player1 = None
+        self.player2 = None
+        self.steps = 0
 
-    def add_players(self, player1=None, player2=None):
-        ''' Fills the two player slots '''
-        self.player1 = player1
-        self.player2 = player2
+    def setup(self):
+        if self.player1 is not None:
+            player1_padded = self.pad_vertically(self.player1)
+        else:
+            player1_padded = self.pad_vertically(np.zeros((1, 1), dtype=byte))
 
-    def launch(self, num_steps=0):
-        ''' Creates the board, inserts the players' intial states into the grid
-         and starts the game for num_steps '''
-
-        if self.player1 is None:
-             raise Exception("This game doesn't have any players")
-
-        height, width = self.board_dims
-        self.gol = GameOfLife(width, height)
-
-        # Pad each of the players' initial states vertically
-        player1_padded = self.pad_vertically(self.player1)
         if self.player2 is not None:
             # Rotate player2 180 degrees and replace 1's with 2's
             player2 = np.rot90(np.copy(self.player2), k=2) * 2
             player2_padded = self.pad_vertically(player2)
         else:
-            dummy = np.zeros(self.player1.shape, dtype=np.int8)
-            player2_padded = self.pad_vertically(dummy)
+            player2_padded = self.pad_vertically(np.zeros((1, 1), dtype=byte))
+
+        height, width = self.board_dims
 
         # Pad the two resulting blocks horizontally to form the final grid
         grid = self.pad_horizontally(player1_padded, player2_padded)
-        test = grid.flatten()
-        u, indices = np.unique(test, return_index=True)
+        self.engine = GOLEngine(width, height, grid)
+        self.steps = 0
 
-        self.gol.set_grid(grid)
-        self.run_steps(num_steps)
+    def add_players(self, player1 = None, player2=None):
+        ''' Fills the two player slots '''
+        if player1 is not None:
+            self.player1 = player1
+        if player2 is not None:
+            self.player2 = player2
+        self.setup()
+
+    def grid(self):
+        if not self.engine:
+            return np.zeros(self.board_dims)
+        return self.engine.grid()
 
     def run_steps(self, num_steps):
+        if self.player1 is None and self.player2 is None:
+             raise Exception("This game doesn't have any players")
+
         try:
-            self.gol.run_steps(num_steps)
-        except AttributeError:
-            print("gol object wasn't initialized. launch() before you run_steps()")
+            self.engine.run_steps(num_steps)
+            self.steps += num_steps
+        except Exception as e:
+            print(e)
 
     def pad_vertically(self, state):
         ''' Adds equal zero padding to the top and bottom of a player's initial state

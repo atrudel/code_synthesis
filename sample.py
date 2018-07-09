@@ -2,8 +2,7 @@ import curses
 import sys
 from time import sleep
 
-import gol
-import rle
+from game_of_life import rle, game
 
 def draw_border(stdscr, width, height):
 	stdscr.move(0, 0)
