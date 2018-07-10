@@ -6,9 +6,9 @@
 **How:** Classic GOL patterns adopted as players.  
 **Reasoning:** Although these patterns are not designed as players, they can indicate how well an AI generated program interacts with a growing program.   
 
-## Benchmark 3 - Classic generative algorithm 
-**How:**  
-**Reasoning:** 
+## Benchmark 3 - Classic evolutionary algorithm 
+**How:** A population of players play against each other, and the best are selected and mutated to form the next generation.
+**Reasoning:** This benchmark can indicate if an AI can improve faster than genetic mutations.
 
 
 ## Usage:
