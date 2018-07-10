@@ -12,3 +12,11 @@
 - The player that has the most surrounding cells, owns the new cell that is born
 - Killing cells follows them Game of life core rules
 - The player with most live cells after 1000 cycles wins
+
+## Requirements
+- python 3.6.5 (is guaranteed to work)
+- numpy
+- numba
+- pyqt5 (for the graphical interface)
+
+`pip install numpy numba pyqt5`
