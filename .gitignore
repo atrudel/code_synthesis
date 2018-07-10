@@ -1,3 +1,5 @@
 game/
 ./output/
 ./archive/
+**__pycache__
+**.ipynb_checkpoints
