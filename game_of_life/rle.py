@@ -1,4 +1,6 @@
 import numpy as np
+from numpy import byte
+import re
 
 class Pattern:
 	def __init__(self, filename):
@@ -6,45 +8,59 @@ class Pattern:
 		line = f.readline()
 		while line.startswith("#"):
 			line = f.readline()
-		coords = line.split(",")
-		self.width = int(coords[0][4:])
-		self.height = int(coords[1][5:])
+		match = re.search("x\s*=\s*(\d+)\s*,\s*y\s*=\s*(\d+)", line)
+		if match and len(match.groups()) == 2:
+			self.width = int(match.group(1))
+			self.height = int(match.group(2))
+		else:
+			raise Exception("cannot parse pattern size")
 		data = "".join(f.readlines()).replace("\n", "")
-		data = data[:data.find("!")]
-		data = data.split("$")
-		self.data = np.zeros(0, dtype=np.byte)
+		data = re.findall("([^$!]*.)", data)
+
+		def make_line(string):
+			result = np.zeros((self.width, ), dtype=byte)
+			match = re.findall("\s*(\d*\s*[bo$!])\s*", string)
+			pos = 0
+			for tag in match:
+				size = 1
+				amount, elem = re.match("(\d*)\s*([ob$!])", tag).groups()
+				if len(amount) > 0:
+					size = int(amount)
+					if size == 0:
+						raise Exception("invalid repetition count")
+
+				if elem == "o":
+					result[pos : pos + size] = np.ones((size, ), dtype=byte)
+					pos += size
+				elif elem == "b":
+					pos += size
+				elif elem == "$":
+					result = np.vstack((result, \
+						np.zeros((size - 1, result.shape[0]), dtype=byte)))
+					break
+				elif elem == "!":
+					break
+			return result
+
+		self.data = None
 		for line in data:
-			arr = line_to_byte(line, self.width)
-			if len(self.data) == 0:
-				self.data = arr
+			result = make_line(line)
+			if self.data is None:
+				self.data = result
 			else:
-				self.data = np.vstack((self.data, arr))
+				self.data = np.vstack((self.data, result))
 
-def line_to_byte(line, width):
-	b = np.zeros((width,), dtype = np.byte)
-	last = 0
-	i = 0
-	pos = 0
-	if len(line) != 0:
-		for i in range(len(line)):
-			if line[i].isdigit():
-				continue
+def pad_pattern(pattern, shape):
+	if len(pattern.shape) != len(shape) or len(pattern.shape) != 2:
+		raise Exception("wrong pattern or shape")
 
-			elif line[i] == "b":
-				data = 0
-			else:
-				data = 1
+	if (pattern.shape[0] > shape[0] or pattern.shape[1] > shape[1]):
+		raise Exception("pattern is bigger than target shape")
 
-			count = 1
-			if i > last:
-				count = int(line[last:i])
-			for k in range(count):
-				b[pos + k] = data
-			pos += count
-			last = i + 1
-		i += 1
-
-	if i > last:
-		count = int(line[last:i]) - 1
-		b = np.vstack((b, np.zeros((count, width), dtype = np.byte)))
-	return b
+	hdiff = shape[1] - pattern.shape[1]
+	vdiff = shape[0] - pattern.shape[0]
+	hpad = (hdiff) // 2
+	vpad = (vdiff) // 2
+	return np.pad(pattern, ((vpad, vpad + 1 if vdiff % 2 else vpad),\
+		(hpad, hpad + 1 if hdiff % 2 else hpad)),\
+		'constant', constant_values=0)
