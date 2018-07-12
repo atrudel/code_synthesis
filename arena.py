@@ -1,8 +1,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow, QFileDialog, \
-	QMessageBox, QInputDialog
+	QMessageBox, QInputDialog, QFileSystemModel, QTreeView
 from PyQt5.QtGui import QPainter, QPixmap, QColor, QIcon, QPolygon
-from PyQt5.QtCore import Qt, QCoreApplication, QPoint
+from PyQt5.QtCore import Qt, QCoreApplication, QPoint, QDir
 from GUI.ui.ui_mainwindow import Ui_MainWindow
 from game_of_life import rle
 from game_of_life.game import GameContainer
@@ -39,25 +39,67 @@ class MainWindow(QMainWindow):
 		load_icon(self.ui.reset_button, "GUI/icons/reset.png")
 		load_icon(self.ui.multistep_button, "GUI/icons/multi.png")
 
+		def init_tree_view(tree):
+			model = QFileSystemModel()
+			model.setFilter(model.filter() & ~QDir.NoDotDot)
+			model.setRootPath(QDir.currentPath())
+			model.sort(0)
+			tree.setModel(model);
+			tree.setRootIndex(model.index(QDir.currentPath()));
+			for i in range(model.columnCount() - 1, 0, -1):
+				tree.hideColumn(i)
+			return model
+
+		self.filemodel1 = init_tree_view(self.ui.path1_tree)
+		self.filemodel2 = init_tree_view(self.ui.path2_tree)
+
+		self.ui.path1_tree.activated.connect(lambda i: self.tree_open(i, 1))
+		self.ui.path2_tree.activated.connect(lambda i: self.tree_open(i, 2))
+
 		self.ui.play_button.clicked.connect(lambda: self.run(self.max_steps))
 		self.ui.pause_button.clicked.connect(self.pause)
-
 		self.ui.step_button.clicked.connect(self.step)
 		self.ui.reset_button.clicked.connect(self.reset)
 		self.ui.multistep_button.clicked.connect(self.run_custom)
 
-		self.ui.p1_open.clicked.connect(lambda: self.set_player(1))
-		self.ui.p2_open.clicked.connect(lambda: self.set_player(2))
+		self.ui.p1_open.clicked.connect(lambda: self.button_open(1))
+		self.ui.p2_open.clicked.connect(lambda: self.button_open(2))
 		self.ui.mistake.triggered.connect(self.not_a_feature)
 		self.running = False
-		
-	def set_player(self, n):
+	
+	def button_open(self, n):
 		self.running = False
 		try:
 			filename, _ = \
 				QFileDialog.getOpenFileName(self, "Select player {}".format(n))
 			if filename == '':
 				return
+			self.set_player(filename, n)
+		except Exception as e:
+			self.ui.statusbar.showMessage(str(e))
+
+	def tree_open(self, index, n):
+		self.running = False
+		try:
+			if n == 1:
+				model = self.filemodel1
+				tree = self.ui.path1_tree
+			else:
+				model = self.filemodel2
+				tree = self.ui.path2_tree
+			filename = model.filePath(index)
+			if model.isDir(index):
+				model.setRootPath(filename)
+				model.sort(0)
+				tree.setRootIndex(model.index(filename))
+				return
+			self.set_player(filename, n)
+		except Exception as e:
+			self.ui.statusbar.showMessage(str(e))
+
+	def set_player(self, filename, n):
+		self.running = False
+		try:
 			p = rle.Pattern(filename)
 			player = rle.pad_pattern(p.data, self.playersize)
 
