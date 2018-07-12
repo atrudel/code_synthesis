@@ -146,7 +146,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "GOLAI viewer"))
         self.p1_open.setText(_translate("MainWindow", "..."))
         self.p2_open.setText(_translate("MainWindow", "..."))
         self.play_button.setToolTip(_translate("MainWindow", "<html><head/><body><p>Run</p></body></html>"))

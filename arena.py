@@ -211,7 +211,6 @@ class MainWindow(QMainWindow):
 def start(game = None):
 	app = QApplication(sys.argv)
 	window = MainWindow(game)
-
 	window.show()
 	window.draw_arena()
 
