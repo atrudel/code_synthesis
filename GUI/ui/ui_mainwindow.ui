@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
-    <height>589</height>
+    <width>492</width>
+    <height>558</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,20 +32,8 @@
     </property>
     <item>
      <widget class="QWidget" name="widget" native="true">
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="1,5">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,1">
        <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
@@ -58,10 +46,7 @@
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <widget class="QGroupBox" name="groupBox">
-            <property name="title">
-             <string>Player 1</string>
-            </property>
+           <widget class="QFrame" name="frame">
             <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
               <widget class="QLineEdit" name="p1_path">
@@ -81,10 +66,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_2">
-            <property name="title">
-             <string>Player 2</string>
-            </property>
+           <widget class="QFrame" name="frame_2">
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
               <widget class="QLineEdit" name="p2_path">
@@ -104,6 +86,13 @@
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="percent_bar">
+         <property name="text">
+          <string/>
+         </property>
         </widget>
        </item>
        <item>
@@ -215,8 +204,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>504</width>
-     <height>22</height>
+     <width>492</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -230,7 +219,7 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="mistake">
    <property name="text">
-    <string>Just don't click here</string>
+    <string>&amp;Just don't click here</string>
    </property>
    <property name="toolTip">
     <string>Really, don't</string>

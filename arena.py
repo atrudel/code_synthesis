@@ -76,29 +76,50 @@ class MainWindow(QMainWindow):
 	def resizeEvent(self, event):
 		pass
 
+	#@jit
 	def draw_arena(self):
-		pmap = QPixmap(512, 512)
+		p1_color = QColor("blue")
+		p2_color = QColor("yellow")
+
+		def draw_bar(left, right):
+			leftcol = p1_color if left > right else p1_color.darker()
+			rightcol = p2_color if left < right else p2_color.darker()
+			barsize = self.ui.percent_bar.size()
+			pmap = QPixmap(barsize.width(), barsize.height())
+			pmap.fill(QColor("white"))
+			painter = QPainter(pmap)
+			xdiv = barsize.width() * left / (left + right)
+			painter.fillRect(0, 0, xdiv, barsize.height(), leftcol)
+			painter.fillRect(xdiv, 0, \
+				barsize.width() - xdiv, barsize.height(), rightcol)
+			painter.end()
+			self.ui.percent_bar.setPixmap(pmap)
+
+		pmap = QPixmap(self.gamesize[0], self.gamesize[1])
 		pmap.fill(QColor("gray"))
 
 		if self.g.engine is not None:
-			grid = self.g.grid()
-			painter = QPainter(pmap)
 			p1 = QPolygon()
 			p2 = QPolygon()
+
+			grid = self.g.grid()
 			for x, y in self.g.engine._points:
 				pt = QPoint(x, y)
-				if (self.g.grid()[y][x] & 1):
+				if (grid[y][x] & 1):
 					p1.append(pt)
 				else:
 					p2.append(pt)
 
-			painter.setPen(QColor("blue"))
+			draw_bar(p1.size(), p2.size())
+
+			painter = QPainter(pmap)
+			painter.setPen(p1_color)
 			painter.drawPoints(p1)
-			painter.setPen(QColor("yellow"))
+			painter.setPen(p2_color)
 			painter.drawPoints(p2)
 
-			#painter.drawPoints(points)
 			painter.end()
+
 		self.ui.canvas_label.setPixmap(pmap)
 
 	def run(self, steps = -1):
