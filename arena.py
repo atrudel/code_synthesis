@@ -4,13 +4,23 @@ from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow, QFileDialog, \
 from PyQt5.QtGui import QPainter, QPixmap, QColor, QIcon, QPolygon
 from PyQt5.QtCore import Qt, QCoreApplication, QPoint
 from GUI.ui.ui_mainwindow import Ui_MainWindow
-from game_of_life import game, rle
+from game_of_life import rle
+from game_of_life.game import GameContainer
 import numpy as np
+import time
+import pprofile
+#from numba import jit
 
 class MainWindow(QMainWindow):
-	def __init__(self):
+	def __init__(self, game):
 		super(QMainWindow, self).__init__()
-		self.gamesize = (512, 512)
+		if game is not None:
+			self.g = game
+			self.gamesize = self.g.size()
+		else:
+			self.gamesize = (512, 512)
+			self.g = GameContainer(self.gamesize[0], self.gamesize[1])
+
 		self.playersize = (64, 64)
 		self.max_steps = -1
 
@@ -18,8 +28,6 @@ class MainWindow(QMainWindow):
 		self.ui.setupUi(self)
 
 		self.ui.canvas_label.setMinimumSize(self.gamesize[0], self.gamesize[1])
-
-		self.g = game.GameContainer(self.gamesize[0], self.gamesize[1])
 
 		def load_icon(button, filename):
 			picon = QIcon(QPixmap(filename))
@@ -137,12 +145,16 @@ class MainWindow(QMainWindow):
 		d.setText("I can't believe you've done this...")
 		d.exec_()
 
-app = QApplication(sys.argv)
-window = MainWindow()
+def start(game = None):
+	app = QApplication(sys.argv)
+	window = MainWindow(game)
 
-window.show()
-window.draw_arena()
+	window.show()
+	window.draw_arena()
 
-app.lastWindowClosed.connect(window.pause)
+	app.lastWindowClosed.connect(window.pause)
+	app.aboutToQuit.connect(app.deleteLater)
+	app.exec_()
 
-sys.exit(app.exec_())
+if __name__ == "__main__":
+	start()

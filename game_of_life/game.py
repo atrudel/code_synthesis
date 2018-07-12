@@ -54,6 +54,9 @@ class GameContainer:
         except Exception as e:
             print(e)
 
+    def size(self):
+        return (self.board_dims[1], self.board_dims[0])
+
     def pad_vertically(self, state):
         ''' Adds equal zero padding to the top and bottom of a player's initial state
         in order to match the board's height. Handles off-by-one padding distance '''
