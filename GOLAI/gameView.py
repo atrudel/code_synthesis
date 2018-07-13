@@ -3,11 +3,11 @@ from PyQt5.QtWidgets import QApplication, QDialog, QMainWindow, QFileDialog, \
 	QMessageBox, QInputDialog, QFileSystemModel, QTreeView
 from PyQt5.QtGui import QPainter, QPixmap, QColor, QIcon, QPolygon
 from PyQt5.QtCore import Qt, QCoreApplication, QPoint, QDir
-from GUI.ui.ui_mainwindow import Ui_MainWindow
-from game_of_life import rle
-from game_of_life.game import GameContainer
+from .GUI.ui.ui_mainwindow import Ui_MainWindow
+from .fileLoader import Pattern, pad_pattern
+from .arena import Arena
 import numpy as np
-import time
+import os
 import multiprocessing
 #from numba import jit
 
@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
 			self.gamesize = self.g.size()
 		else:
 			self.gamesize = (512, 512)
-			self.g = GameContainer(self.gamesize[0], self.gamesize[1])
+			self.g = Arena(self.gamesize[0], self.gamesize[1])
 
 		self.playersize = (64, 64)
 		self.max_steps = -1
@@ -29,10 +29,12 @@ class MainWindow(QMainWindow):
 
 		self.ui.canvas_label.setMinimumSize(self.gamesize[0], self.gamesize[1])
 
+		path = os.path.dirname(os.path.realpath(__file__))
+
 		def load_icon(button, filename):
-			picon = QIcon(QPixmap(filename))
+			picon = QIcon(QPixmap(os.path.join(path, filename)))
 			button.setIcon(picon)
-		
+
 		load_icon(self.ui.play_button, "GUI/icons/play.png")
 		load_icon(self.ui.pause_button, "GUI/icons/pause.png")
 		load_icon(self.ui.step_button, "GUI/icons/step.png")
@@ -100,8 +102,8 @@ class MainWindow(QMainWindow):
 	def set_player(self, filename, n):
 		self.running = False
 		try:
-			p = rle.Pattern(filename)
-			player = rle.pad_pattern(p.data, self.playersize)
+			p = Pattern(filename)
+			player = pad_pattern(p.data, self.playersize)
 
 			if n == 1:
 				self.g.add_players(player)

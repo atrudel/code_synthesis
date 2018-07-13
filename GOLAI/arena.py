@@ -3,7 +3,7 @@ from .GOLEngine import GOLEngine
 import numpy as np
 from numpy import byte
 
-class GameContainer:
+class Arena:
     def __init__(self, width=512, height=512):
         self.board_dims = (height, width)
         self.engine = None

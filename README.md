@@ -20,3 +20,18 @@
 - pyqt5 (for the graphical interface)
 
 `pip install numpy numba pyqt5`
+
+## Usage
+The GOLAI package contains all the modules we made.
+Let's say you want to use the gameViewer module:
+- make sure the "GOLAI" folder is somewhere in your path, you can add it at runtime adding the following code in your script
+```python
+import sys
+sys.path.append("<path/to/GOLAI/parent/folder>")
+```
+- import the module you need
+```python
+import GOLAI.gameView as gw
+#otherwise
+from GOLAI import gameView as gw
+```
