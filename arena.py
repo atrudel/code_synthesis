@@ -8,7 +8,6 @@ from game_of_life import rle
 from game_of_life.game import GameContainer
 import numpy as np
 import time
-import pprofile
 #from numba import jit
 
 class MainWindow(QMainWindow):
