@@ -8,6 +8,7 @@ from game_of_life import rle
 from game_of_life.game import GameContainer
 import numpy as np
 import time
+import multiprocessing
 #from numba import jit
 
 class MainWindow(QMainWindow):
@@ -207,7 +208,7 @@ class MainWindow(QMainWindow):
 		d.setText("I can't believe you've done this...")
 		d.exec_()
 
-def start(game = None):
+def _run(game):
 	app = QApplication(sys.argv)
 	window = MainWindow(game)
 	window.show()
@@ -216,6 +217,18 @@ def start(game = None):
 	app.lastWindowClosed.connect(window.pause)
 	app.aboutToQuit.connect(app.deleteLater)
 	app.exec_()
+
+
+
+def start(game = None):
+	if __name__ == "__main__":
+		_run(game)
+		return None
+	else:
+		ctx = multiprocessing.get_context('spawn')
+		proc = ctx.Process(target=_run, args=(game,))
+		proc.start()
+		return proc
 
 if __name__ == "__main__":
 	start()
