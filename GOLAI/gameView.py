@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
 			self.gamesize = self.g.size()
 		else:
 			self.gamesize = (512, 512)
-			self.g = Arena(self.gamesize[0], self.gamesize[1])
+			self.g = Arena(*self.gamesize)
 
 		self.playersize = (64, 64)
 		self.max_steps = -1
@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
 
-		self.ui.canvas_label.setMinimumSize(self.gamesize[0], self.gamesize[1])
+		self.ui.canvas_label.setMinimumSize(*self.gamesize)
 
 		path = os.path.dirname(os.path.realpath(__file__))
 
@@ -101,6 +101,8 @@ class MainWindow(QMainWindow):
 
 	def set_player(self, filename, n):
 		self.running = False
+		if filename is None or (n != 1 and n != 2):
+			return
 		try:
 			p = Pattern(filename)
 			player = pad_pattern(p.data, self.playersize)
@@ -139,7 +141,7 @@ class MainWindow(QMainWindow):
 			painter.end()
 			self.ui.percent_bar.setPixmap(pmap)
 
-		pmap = QPixmap(self.gamesize[0], self.gamesize[1])
+		pmap = QPixmap(*self.gamesize)
 		pmap.fill(QColor("gray"))
 
 		if self.g.engine is not None:
@@ -210,10 +212,12 @@ class MainWindow(QMainWindow):
 		d.setText("I can't believe you've done this...")
 		d.exec_()
 
-def _run(game):
+def _run(game, player1_file, player2_file):
 	app = QApplication(sys.argv)
 	window = MainWindow(game)
 	window.show()
+	window.set_player(player1_file, 1)
+	window.set_player(player2_file, 2)
 	window.draw_arena()
 
 	app.lastWindowClosed.connect(window.pause)
@@ -222,9 +226,9 @@ def _run(game):
 
 
 
-def start(game = None):
+def start(game = None, p1 = None, p2 = None):
 	if __name__ == "__main__":
-		_run(game)
+		_run(game, p1, p2)
 		return None
 	else:
 		ctx = multiprocessing.get_context('spawn')
@@ -233,4 +237,8 @@ def start(game = None):
 		return proc
 
 if __name__ == "__main__":
-	start()
+	args = len(sys.argv)
+	p = []
+	if args > 1 and args < 4:
+		p += sys.argv[1:]
+	start(None, *p)

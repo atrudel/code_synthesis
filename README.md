@@ -35,3 +35,14 @@ import GOLAI.gameView as gw
 #otherwise
 from GOLAI import gameView as gw
 ```
+
+### Running the interface
+The user interface can be started as a module or on it's own.
+With both approaches you can preload player files when the application starts.
+
+Inside a script you will need to import the module gameView as previously shown,
+then you can call the module's `start()` function.
+Using this approach allows the interface to be started with an existing Arena.
+
+The other way to run the interface is from shell, by using the command
+`python -m GOLAI.gameView [file1[,file2]]`
