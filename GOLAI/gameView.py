@@ -23,6 +23,8 @@ class MainWindow(QMainWindow):
 
 		self.playersize = (64, 64)
 		self.max_steps = -1
+		self.scale = 1
+		self.offset = (0, 0)
 
 		self.ui = Ui_MainWindow()
 		self.ui.setupUi(self)
@@ -66,9 +68,35 @@ class MainWindow(QMainWindow):
 
 		self.ui.p1_open.clicked.connect(lambda: self.button_open(1))
 		self.ui.p2_open.clicked.connect(lambda: self.button_open(2))
+
+		self.ui.canvas_label.mousePressEvent = self.view_clicked
+
 		self.ui.mistake.triggered.connect(self.not_a_feature)
 		self.running = False
 	
+	def view_clicked(self, event):
+		pos = event.localPos()
+		pos = (pos.x(), pos.y())
+		if event.button() == Qt.LeftButton:
+			off = self.offset
+			s = self.scale * 1.5
+			self.offset =\
+				(off[0] - pos[0] / self.scale + (self.gamesize[0] / (s)) / 2,\
+				off[1] - pos[1] / self.scale + (self.gamesize[1] / (s)) / 2)
+			self.scale = s
+
+		elif event.button() == Qt.RightButton:
+			off = self.offset
+			s = self.scale / 1.5 if self.scale / 1.5 > 1 else 1
+			if s == 1:
+				self.offset = (0, 0)
+			else:
+				self.offset =\
+				(off[0] - pos[0] / self.scale + (self.gamesize[0] / (s)) / 2,\
+				off[1] - pos[1] / self.scale + (self.gamesize[1] / (s)) / 2)
+			self.scale = s
+		self.draw_arena()
+
 	def button_open(self, n):
 		self.running = False
 		try:
@@ -159,6 +187,8 @@ class MainWindow(QMainWindow):
 			draw_bar(p1.size(), p2.size())
 
 			painter = QPainter(pmap)
+			painter.scale(self.scale, self.scale)
+			painter.translate(*self.offset)
 			painter.setPen(p1_color)
 			painter.drawPoints(p1)
 			painter.setPen(p2_color)

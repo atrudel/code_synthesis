@@ -119,6 +119,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.addWidget(self.widget_3, 0, QtCore.Qt.AlignTop)
         self.canvas_label = QtWidgets.QLabel(self.arena)
         self.canvas_label.setEnabled(True)
+        self.canvas_label.setCursor(QtGui.QCursor(QtCore.Qt.CrossCursor))
         self.canvas_label.setObjectName("canvas_label")
         self.horizontalLayout_5.addWidget(self.canvas_label)
         self.horizontalLayout_5.setStretch(1, 1)

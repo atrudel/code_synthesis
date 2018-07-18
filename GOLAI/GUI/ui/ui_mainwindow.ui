@@ -257,6 +257,9 @@
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
+                <property name="cursor">
+                 <cursorShape>CrossCursor</cursorShape>
+                </property>
                 <property name="text">
                  <string>TextLabel</string>
                 </property>
