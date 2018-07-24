@@ -45,10 +45,6 @@ class MainResnet(nn.Module):
         x = self.resnetblock(x)
         return x
 
-
-# In[5]:
-
-
 class ValueHead(nn.Module):
     def __init__(self, inchannels=64, board_size=8):
         super().__init__()
