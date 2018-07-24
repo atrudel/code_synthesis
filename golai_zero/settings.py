@@ -1,0 +1,10 @@
+import torch
+
+##### CONFIG
+BLOCKS = 30
+IN_CHANNELS = 2
+OUT_CHANNELS = 64
+
+##### GLOBAL
+##### TRAINING
+##### EVLUATION
