@@ -42,11 +42,11 @@ class GOLEngine:
 		self.__set_points()
 
 	def __set_points(self):
-		self._points.clear()
-		for y in range(self._grid.shape[0]):
-			for x in range(self._grid.shape[1]):
-				if self._grid[y][x] != 0:
-					self._points.add((x, y))
+		grid = self._grid
+		points = [(x, y) for y in range(grid.shape[0]) \
+			for x in range(grid.shape[1]) if grid[y][x] != 0]
+		self._points = set(points)
+
 
 	def grid(self):
 		return self._grid
@@ -54,8 +54,8 @@ class GOLEngine:
 	def run_steps(self, steps):
 		for i in range(steps):
 			step(self._grid, self._next_grid, self._width, self._height, self._points)
-			self._grid = self._next_grid
-			self._next_grid = np.zeros(shape=(self._height, self._width), dtype=np.byte)
+			self._grid, self._next_grid = self._next_grid, self._grid
+			self._next_grid.fill(0)
 		#print (numba.typeof(self._points))
 
 	def size(self):
