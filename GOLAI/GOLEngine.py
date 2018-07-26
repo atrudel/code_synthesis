@@ -77,24 +77,27 @@ def	step(grid, next_grid, w, h, points):
 				n1 = 0
 				n2 = 0
 
-				if x > 0 and y > 0:			#top left
-					b = grid[y - 1][x - 1]
-					if b & 1:
-						n1 += 1
-					elif b & 2:
-						n2 += 1
 				if y > 0:					#top
 					b = grid[y - 1][x]
 					if b & 1:
 						n1 += 1
 					elif b & 2:
 						n2 += 1
-				if x < w - 1 and y > 0:		#top right
-					b = grid[y - 1][x + 1]
-					if b & 1:
-						n1 += 1
-					elif b & 2:
-						n2 += 1
+
+					if x > 0:			#top left
+						b = grid[y - 1][x - 1]
+						if b & 1:
+							n1 += 1
+						elif b & 2:
+							n2 += 1
+
+					if x < w - 1:		#top right
+						b = grid[y - 1][x + 1]
+						if b & 1:
+							n1 += 1
+						elif b & 2:
+							n2 += 1
+
 				if x > 0:					#left
 					b = grid[y][x - 1]
 					if b & 1:
@@ -107,24 +110,26 @@ def	step(grid, next_grid, w, h, points):
 						n1 += 1
 					elif b & 2:
 						n2 += 1
-				if x > 0 and y < h - 1:		#bottom left
-					b = grid[y + 1][x - 1]
-					if b & 1:
-						n1 += 1
-					elif b & 2:
-						n2 += 1
 				if y < h - 1:				#bottom
 					b = grid[y + 1][x]
 					if b & 1:
 						n1 += 1
 					elif b & 2:
 						n2 += 1
-				if x < (w - 1) and y < (h - 1):	#bottom right
-					b = grid[y + 1][x + 1]
-					if b & 1:
-						n1 += 1
-					elif b & 2:
-						n2 += 1
+
+					if x > 0:		#bottom left
+						b = grid[y + 1][x - 1]
+						if b & 1:
+							n1 += 1
+						elif b & 2:
+							n2 += 1
+							
+					if x < (w - 1):	#bottom right
+						b = grid[y + 1][x + 1]
+						if b & 1:
+							n1 += 1
+						elif b & 2:
+							n2 += 1
 
 				if grid[y][x]:		#if alive
 					if n1 + n2 < 2 or n1 + n2 > 3:
