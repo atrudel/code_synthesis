@@ -1,9 +1,3 @@
-game/
-./output/
-./archive/
 **__pycache__
 **.ipynb_checkpointsarchive/
-notebooks/
-output/
-runs/
-archive
+*.ipynb_checkpoints
