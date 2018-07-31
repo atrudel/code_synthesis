@@ -1,11 +1,12 @@
 from GOLAI import arena
+import random
 from settings import *
+from torch import Tensor
 
 class Game():
     
     def __init__(self):
         
-    
     
     def getInitBoard(self):
         return np.zeros((9,9), dtype=np.int8)
@@ -14,9 +15,9 @@ class Game():
         return arena.size()
     
     def getActionSize(self):
-        return(VOCABSIZE)
+        return(VOCAB_SIZE)
     
-    def getNextState(self, board, player, action):
+    def getNextState(self, program, action):
         
         """
         
@@ -26,13 +27,35 @@ class Game():
         
         """
     
-    def getGameEnded(self, board, player1, player2):
+    def getGameEnded(self, playerOne, playerTwo, game_round):
         
-        player1, player2 = convert_to_arena_players(player1, player2)
-        arena.add_players(player1, player2)
-        arena.run_steps(GAMEROUNDS)
+        if game_round < PROGRAM_LENGHT:
+            return 0
+        else:
+            player1, player2 = convertToArenaPlayers(playerOne, playerTwo)
+            arena.add_players(playerOne, playerTwo)
+            arena.run_steps(GAME_ROUNDS)
+            return selectWinner(arena.grid())
+    
+    def selectWinner(self, board):
+        ones = 0, twos = 0
+
+        for i in game_result:
+            if i == 1:
+                ones += 1
+            elif i == 2:
+                twos += 1
+
+        if ones > twos:
+            winner = Tensor(1.0)
+        elif ones > twos:
+            winner = Tensor(-1.0)
+        else:
+            winner = Tensor(random.uniform(0.001, 0.1))
+            
+        return winner
         
-    def convert_to_arena_players(player1, player2):
+    def convertToArenaPlayers(player1, player2):
         
         """
         
@@ -64,4 +87,7 @@ class Game():
         
         """
         
-        return board.reshape(BOARDWIDTH, BOARDHEIGHT)
+        return board.reshape(PROGRAM_WIDTH, PROGRAM_HEIGHT)
+    
+
+# Structure from: https://github.com/suragnair/alpha-zero-general/blob/master/Game.py

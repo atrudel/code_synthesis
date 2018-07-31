@@ -61,7 +61,7 @@ class MCTS():
                 best_act = a
         
         a = best_act
-        next_s, next_player = self.game.getNextState(playerOne, 1, a)
+        next_s, next_player = self.game.getNextState(playerOne, a)
         
         v = self.search(playerOne, playerTwo)
         
