@@ -53,7 +53,7 @@ class GOLEngine:
 
 	def run_steps(self, steps):
 		for i in range(steps):
-			step(self._grid, self._next_grid, self._width, self._height, self._points)
+			step(self._grid, self._next_grid, self._points)
 			self._grid, self._next_grid = self._next_grid, self._grid
 			self._next_grid.fill(0)
 		#print (numba.typeof(self._points))
@@ -62,9 +62,10 @@ class GOLEngine:
 		return (self._width, self._height)
 
 @jit(cache=True)
-def	step(grid, next_grid, w, h, points):
+def	step(grid, next_grid, points):
 	born = set()
 	dead = set()
+	h, w = grid.shape
 	for bx, by in points:
 		xmin = bx - 1 if bx > 0 else bx
 		xmax = bx + 1 if bx < w - 1 else bx
