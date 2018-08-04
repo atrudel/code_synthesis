@@ -1,5 +1,5 @@
 import sys
-from GOLEngine import GOLEngine
+from .GOLEngine import GOLEngine
 import numpy as np
 from numpy import byte
 
