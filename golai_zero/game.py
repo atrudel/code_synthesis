@@ -106,7 +106,7 @@ class Game():
         else:
             reward = 0.00000001
             
-        return winner
+        return reward
 
     
     def stringRepresentation(self, program):
