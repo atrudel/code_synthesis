@@ -9,6 +9,7 @@ import time, os, sys
 from pickle import Pickler, Unpickler
 from random import shuffle
 import random
+from tensorboardX import SummaryWriter
 
 
 class Coach():
@@ -16,6 +17,7 @@ class Coach():
     def __init__(self, game, nnet, args):
         self.game = game
         self.nnet = nnet
+        self.writer = SummaryWriter()
         #self.pnet = self.nnet.__class__(self.game)
         self.args = args
         self.mcts = MCTS(self.game, self.nnet, self.args)
@@ -95,7 +97,7 @@ class Coach():
                 bar.next()
             
             print("\n\nWins:", self.wins)
-            
+            self.writer.add_scalars('zero_10/winning', {'winning': self.wins}, i)
             self.trainExamplesHistory.append(iterationTrainExamples)
 
             if len(self.trainExamplesHistory) > self.args.numItersForTrainExamplesHistory:
