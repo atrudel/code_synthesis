@@ -5,6 +5,7 @@ from collections import deque
 from MCTS import MCTS
 import numpy as np
 from pytorch_classification.utils import Bar, AverageMeter
+from turn_program_into_file import turn_program_into_file
 import time, os, sys
 from pickle import Pickler, Unpickler
 from random import shuffle
@@ -17,13 +18,17 @@ class Coach():
     def __init__(self, game, nnet, args):
         self.game = game
         self.nnet = nnet
+        self.iteration = 0
+        self.episode = 0
         self.writer = SummaryWriter()
         #self.pnet = self.nnet.__class__(self.game)
         self.args = args
+        self.program_dir = os.path.join(self.args.output_dir, self.args.time)
         self.mcts = MCTS(self.game, self.nnet, self.args)
         self.trainExamplesHistory = []
         self.allOpponents = []
         self.wins = 0
+
     
     def createRandomOpp(self):
         
@@ -40,11 +45,11 @@ class Coach():
 
         return new_probs
     
-    def executeEpisode(self, eps):
+    def executeEpisode(self):
         
         trainExamples = []
         self.curProgram = self.game.getInitProgram()
-        self.curOpponent = self.trainOpponents[eps]
+        self.curOpponent = self.trainOpponents[self.episode]
         episodeStep = 0
         
         while True:
@@ -63,13 +68,19 @@ class Coach():
             
             if episodeStep == self.args.predictionLen:
                 self.allOpponents.append(self.curProgram)
-                r = self.game.getGameEnded(self.curProgram, self.curOpponent)
+                r, ones, twos, p1, p2 = self.game.getGameEnded(self.curProgram, self.curOpponent)
+                
+                if self.args.savePrograms:
+                    turn_program_into_file(playerOne, self.program_dir + "p1-" + str(self.iteration) + "-cycle-" + str(i) + ".rle")
+                    turn_program_into_file(playerOne, save_dir + "player-" + str(list_id) + "-cycle-" + str(i) + ".rle")
+                    
                 self.wins += r
                 return[(x[0], x[1], r) for x in trainExamples]
             
     def learn(self):
 
         self.createRandomOpp()
+        os.makedirs(self.program_dir)
 
         for i in range(1, self.args.numIters+1):
 
@@ -77,7 +88,8 @@ class Coach():
 
 
             iterationTrainExamples = deque([], maxlen=self.args.maxlenOfQueue)
-
+            self.os.makedirs(os.path.join(self.program_dir, str(i)))
+            self.iteration = i
             eps_time = AverageMeter()
             bar = Bar('Self Play', max=self.args.numEps)
             end = time.time()
@@ -86,8 +98,9 @@ class Coach():
             self.wins = 0
             
             for eps in range(self.args.numEps):
+                self.episode = eps
                 self.mcts = MCTS(self.game, self.nnet, self.args)
-                iterationTrainExamples += self.executeEpisode(eps)
+                iterationTrainExamples += self.executeEpisode()
                 eps_time.update(time.time() - end)
                 end = time.time()
                 bar.suffix = '({eps}/{maxeps} Eps Time: {et:.3f} | Total: {total:} | ETA: \

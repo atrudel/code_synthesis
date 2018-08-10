@@ -1,7 +1,6 @@
 import random
 from torch import Tensor
 import numpy as np
-
 import random
 from torch import Tensor
 
@@ -82,12 +81,13 @@ class Game():
         
         return np.full((self.args.predictionLen), -1, dtype=np.int8).tolist()
     
-    def getGameEnded(self, playerOne, playerTwo):
+    def getGameEnded(self, playerOne, playerTwo, iteration, episode, save=True):
         playerOne = self.integerImageRepresentation(playerOne)
         playerTwo = self.integerImageRepresentation(playerTwo)
         self.arena.add_players(playerOne, playerTwo)
         self.arena.run_steps(self.args.gameSteps)
-        return self.selectWinner(self.arena.grid().flatten())
+        reward, ones, twos = self.selectWinner(self.arena.grid().flatten())
+        return reward, ones, twos, playerOne, playerTwo
     
     def selectWinner(self, game_result):
         ones = 0
@@ -106,7 +106,7 @@ class Game():
         else:
             reward = 0.00000001
             
-        return reward
+        return reward, ones, twos
 
     
     def stringRepresentation(self, program):
