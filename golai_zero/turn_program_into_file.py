@@ -12,7 +12,7 @@ def turn_program_into_file(program, filename="program.rle"):
     file = "#N " + name + "\n"
     file += "#C " + comments + "\n"
     file += "#O " + author + "\n"
-    file += "x = " + str(player_width) + ", y= " + str(player_height) + "\n"
+    file += "x = " + str(player_width) + ", y = " + str(player_height) + "\n"
     
     linebreak = 0
     for i in range(player_height):

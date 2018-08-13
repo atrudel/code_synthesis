@@ -48,7 +48,15 @@ class Coach():
         np.random.dirichlet(np.full(dim, self.args.alpha))
 
         return new_probs
-
+    
+    def print_winner(self, value):
+        if value == 1.0:
+            return("win")
+        elif value == -1.0:
+            return("lost")
+        else:
+            return("draw")
+    
     def executeEpisode(self):
 
         trainExamples = []
@@ -75,9 +83,9 @@ class Coach():
                 self.wins += r
                 if self.args.savePrograms:
                     turn_program_into_file(p1, self.file_path + str(self.episode) +
-                                           "-win-" + str(r) + "-tiles-" + str(ones) + "-p1.rle")
+                                           '-' + self.print_winner(r) + "-tiles-" + str(ones) + "-p1.rle")
                     turn_program_into_file(p2, self.file_path + str(self.episode) +
-                                           "-win-" + str(-r) + "-tiles-" + str(twos) + "-p2.rle")
+                                           '-' + self.print_winner(-r) + "-tiles-" + str(twos) + "-p2.rle")
 
                 return[(x[0], x[1], r) for x in trainExamples]
 
@@ -103,6 +111,10 @@ class Coach():
             self.trainOpponents = self.nextOpponents
             self.nextOpponents = []
             shuffle(self.trainOpponents)
+            if i % 10 == 0:
+                self.args.savePrograms = True
+            else:
+                self.args.savePrograms = False
             self.wins = 0
 
             for eps in range(self.args.numEps):
@@ -132,8 +144,8 @@ class Coach():
                 trainExamples.extend(e)
             shuffle(trainExamples)
 
-            self.nnet.save_checkpoint(
-            folder=self.args.checkpoint, filename='temp.pth.tar')
+            self.nnet.save_checkpoint(folder=self.args.checkpoint, filename=self.getCheckpointFile(i))
+            self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='best.pth.tar')
 
             mcts = MCTS(self.game, self.nnet, self.args)  # why?
             self.nnet.train(trainExamples)
