@@ -1,4 +1,5 @@
-import sys, os
+import sys
+import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '../../game/')))
 from GOLAI.arena import Arena
 from collections import deque
@@ -6,7 +7,9 @@ from MCTS import MCTS
 import numpy as np
 from pytorch_classification.utils import Bar, AverageMeter
 from turn_program_into_file import turn_program_into_file
-import time, os, sys
+import time
+import os
+import sys
 from pickle import Pickler, Unpickler
 from random import shuffle
 import random
@@ -14,69 +17,70 @@ from tensorboardX import SummaryWriter
 
 
 class Coach():
-    
+
     def __init__(self, game, nnet, args):
         self.game = game
         self.nnet = nnet
-        self.iteration = 0
         self.episode = 0
+        self.file_path = ""
         self.writer = SummaryWriter()
         #self.pnet = self.nnet.__class__(self.game)
         self.args = args
         self.program_dir = os.path.join(self.args.output_dir, self.args.time)
+
+
         self.mcts = MCTS(self.game, self.nnet, self.args)
         self.trainExamplesHistory = []
-        self.allOpponents = []
+        self.nextOpponents = []
         self.wins = 0
 
-    
     def createRandomOpp(self):
-        
+
         for i in range(self.args.numEps):
-            value = list(range(0, self.args.vocabLen))  
-            self.allOpponents.append(np.random.choice(value, self.args.predictionLen).tolist())
-        
-    
+            value = list(range(0, self.args.vocabLen))
+            self.nextOpponents.append(np.random.choice(value, self.args.predictionLen).tolist())
+
     def dirichlet_noise(self, probs):
 
         dim = (len(probs))
         probs = np.array(probs, dtype=float)
-        new_probs = (1 - self.args.eps) * probs + self.args.eps * np.random.dirichlet(np.full(dim, self.args.alpha))
+        new_probs = (1 - self.args.eps) * probs + self.args.eps * \
+        np.random.dirichlet(np.full(dim, self.args.alpha))
 
         return new_probs
-    
+
     def executeEpisode(self):
-        
+
         trainExamples = []
         self.curProgram = self.game.getInitProgram()
         self.curOpponent = self.trainOpponents[self.episode]
         episodeStep = 0
-        
+
         while True:
             episodeStep += 1
             temp = int(episodeStep < self.args.tempThreshold)
-            
+
             pi = self.mcts.getActionProb(self.curProgram, self.curOpponent, temp)
-            
+
             if episodeStep == 1 and self.args.dirichlet_noise:
                 pi = self.dirichlet_noise(pi)
-                
+
             trainExamples.append([self.game.integerImageRepresentation(self.curProgram), pi, None])
             action = np.random.choice(len(pi), p=pi)
             self.game.getNextState(self.curProgram, action)
-                
-            
+
             if episodeStep == self.args.predictionLen:
-                self.allOpponents.append(self.curProgram)
+                self.nextOpponents.append(self.curProgram)
                 r, ones, twos, p1, p2 = self.game.getGameEnded(self.curProgram, self.curOpponent)
-                
-                if self.args.savePrograms:
-                    turn_program_into_file(playerOne, self.program_dir + "p1-" + str(self.iteration) + "-cycle-" + str(i) + ".rle")
-                    turn_program_into_file(playerOne, save_dir + "player-" + str(list_id) + "-cycle-" + str(i) + ".rle")
-                    
                 self.wins += r
+                if self.args.savePrograms:
+                    turn_program_into_file(p1, self.file_path + str(self.episode) +
+                                           "-win-" + str(r) + "-tiles-" + str(ones) + "-p1.rle")
+                    turn_program_into_file(p2, self.file_path + str(self.episode) +
+                                           "-win-" + str(-r) + "-tiles-" + str(twos) + "-p2.rle")
+
                 return[(x[0], x[1], r) for x in trainExamples]
-            
+
     def learn(self):
 
         self.createRandomOpp()
@@ -88,15 +92,19 @@ class Coach():
 
 
             iterationTrainExamples = deque([], maxlen=self.args.maxlenOfQueue)
-            self.os.makedirs(os.path.join(self.program_dir, str(i)))
-            self.iteration = i
+
+            self.file_path = os.path.join(self.program_dir, str(i))
+
+            os.makedirs(self.file_path)
+            self.file_path += "/"
             eps_time = AverageMeter()
             bar = Bar('Self Play', max=self.args.numEps)
             end = time.time()
-            self.trainOpponents = self.allOpponents[-self.args.numEps:]
+            self.trainOpponents = self.nextOpponents
+            self.nextOpponents = []
             shuffle(self.trainOpponents)
             self.wins = 0
-            
+
             for eps in range(self.args.numEps):
                 self.episode = eps
                 self.mcts = MCTS(self.game, self.nnet, self.args)
@@ -104,121 +112,60 @@ class Coach():
                 eps_time.update(time.time() - end)
                 end = time.time()
                 bar.suffix = '({eps}/{maxeps} Eps Time: {et:.3f} | Total: {total:} | ETA: \
-                {eta:}'.format(eps=eps+1, maxeps=self.args.numEps, et=eps_time.avg,\
-                total=bar.elapsed_td, eta=bar.eta_td)
-
+                                    {eta:}'.format(eps=eps+1, maxeps=self.args.numEps, et=eps_time.avg,
+                                                   total=bar.elapsed_td, eta=bar.eta_td)
                 bar.next()
-            
+
             print("\n\nWins:", self.wins)
             self.writer.add_scalars('zero_10/winning', {'winning': self.wins}, i)
             self.trainExamplesHistory.append(iterationTrainExamples)
 
             if len(self.trainExamplesHistory) > self.args.numItersForTrainExamplesHistory:
-                print("len(trainExamplesHistory) =", len(self.trainExamplesHistory), \
-                      " => remove the oldest trainExamples")
+                print("len(trainExamplesHistory) =", len(self.trainExamplesHistory),
+                  " => remove the oldest trainExamples")
                 self.trainExamplesHistory.pop(0)
 
-            #self.saveTrainExamples(i-1)
+            self.saveTrainExamples(i-1)
             trainExamples = []
 
             for e in self.trainExamplesHistory:
                 trainExamples.extend(e)
             shuffle(trainExamples)
 
-            self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='temp.pth.tar')
+            self.nnet.save_checkpoint(
+            folder=self.args.checkpoint, filename='temp.pth.tar')
 
-            mcts = MCTS(self.game, self.nnet, self.args) ## why?
+            mcts = MCTS(self.game, self.nnet, self.args)  # why?
             self.nnet.train(trainExamples)
 
+    def getCheckpointFile(self, iteration):
+        return 'checkpoint_' + str(iteration) + '.pth.tar'
 
-        def getCheckpointFile(self, iteration):
-            return 'checkpoint_' + str(iteration) + '.pth.tar'
+    def saveTrainExamples(self, iteration):
+        folder = self.args.checkpoint
 
-        def saveTrainExamples(self, iteration):
-            folder = self.args.checkpoint
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        filename = os.path.join(folder, self.getCheckpointFile(iteration)+".examples")
 
-            if not os.path.exists(folder):
-                os.makedirs(folder)
-            filename = os.path.join(folder, self.getCheckpointFile(iteration)+".examples")
+        with open(filename, "wb+") as f:
+            Pickler(f).dump(self.trainExamplesHistory)
+        f.closed
 
-            with open(filename, "wb+") as f:
-                Pickler(f).dump(self.trainExamplesHistory)
+    def loadTrainExamples(self):
+        modelFile = os.path.join(self.args.load_folder_file[0], self.args.load_folder_file[1])
+        examplesFile = modelFile+".examples"
+
+        if not os.path.isfile(examplesFile):
+            print(examplesFile)
+            r = input("File with trainExamples not found. Continue? [y|n]")
+            if r != "y":
+                sys.exit()
+        else:
+            print("File with trainExamples found. Read it.")
+            with open(examplesFile, "rb") as f:
+                self.trainExamplesHistory = Unpickler(f).load()
             f.closed
+            self.skipFirstSelfPlay = True
 
-        def loadTrainExamples(self):
-            modelFile = os.path.join(self.args.load_folder_file[0], self.args.load_folder_file[1])
-            examplesFile = modelFile+".examples"
-
-            if not os.path.isfile(examplesFile):
-                      print(examplesFile)
-                      r = input("File with trainExamples not found. Continue? [y|n]")
-                      if r != "y":
-                          sys.exit()
-            else: 
-
-                print("File with trainExamples found. Read it.")
-                with open(examplesFile, "rb") as f:
-                      self.trainExamplesHistory = Unpickler(f).load()
-                f.closed
-                self.skipFirstSelfPlay = True
-
-# Structure from: https://github.com/suragnair/alpha-zero-general/blob/master/Coach.py      
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-                          
-            
-                
-                
-                
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
+# Structure from: https://github.com/suragnair/alpha-zero-general/blob/master/Coach.py

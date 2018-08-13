@@ -81,7 +81,7 @@ class Game():
         
         return np.full((self.args.predictionLen), -1, dtype=np.int8).tolist()
     
-    def getGameEnded(self, playerOne, playerTwo, iteration, episode, save=True):
+    def getGameEnded(self, playerOne, playerTwo):
         playerOne = self.integerImageRepresentation(playerOne)
         playerTwo = self.integerImageRepresentation(playerTwo)
         self.arena.add_players(playerOne, playerTwo)
