@@ -15,11 +15,11 @@ class MCTS():
         self.Ps = {}   # Policy from neural network
         self.Es = {}   # Stores the rewards from game.getGameEnded
     
-    def getActionProb(self, program, opponent, temp=1):
+    def getActionProb(self, program, temp=1):
         
         for i in range(self.args.numMCTSSims):
             program_sim = deepcopy(program)
-            self.search(program_sim, opponent)
+            self.search(program_sim)
             
         s = self.game.stringRepresentation(program)
         counts = [self.Nsa[(s,a)] if (s,a) in self.Nsa else 0 for a in range(self.args.vocabLen)]
@@ -35,7 +35,7 @@ class MCTS():
         
         return probs
     
-    def search(self, program, opponent):
+    def search(self, program):
         
         s = self.game.stringRepresentation(program)
         
@@ -62,7 +62,7 @@ class MCTS():
         
         a = best_act
         next_program = self.game.getNextState(program, a)
-        v = self.search(next_program, opponent)
+        v = self.search(next_program)
         
         if (s, a) in self.Qsa:
             self.Qsa[(s,a)] = (self.Nsa[(s,a)]*self.Qsa[(s,a)] + v)/(self.Nsa[(s,a)]+1)

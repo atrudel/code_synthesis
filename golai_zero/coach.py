@@ -14,6 +14,7 @@ from pickle import Pickler, Unpickler
 from random import shuffle
 import random
 from tensorboardX import SummaryWriter
+from copy import deepcopy
 
 
 class Coach():
@@ -68,7 +69,7 @@ class Coach():
             episodeStep += 1
             temp = int(episodeStep < self.args.tempThreshold)
 
-            pi = self.mcts.getActionProb(self.curProgram, self.curOpponent, temp)
+            pi = self.mcts.getActionProb(self.curProgram, temp)
 
             if episodeStep == 1 and self.args.dirichlet_noise:
                 pi = self.dirichlet_noise(pi)
@@ -102,17 +103,16 @@ class Coach():
             iterationTrainExamples = deque([], maxlen=self.args.maxlenOfQueue)
 
             self.file_path = os.path.join(self.program_dir, str(i))
-
-            os.makedirs(self.file_path)
             self.file_path += "/"
             eps_time = AverageMeter()
             bar = Bar('Self Play', max=self.args.numEps)
             end = time.time()
-            self.trainOpponents = self.nextOpponents
+            self.trainOpponents = deepcopy(self.nextOpponents)
             self.nextOpponents = []
             shuffle(self.trainOpponents)
-            if i % 10 == 0:
+            if i % 5 == 0:
                 self.args.savePrograms = True
+                os.makedirs(self.file_path)
             else:
                 self.args.savePrograms = False
             self.wins = 0
@@ -147,7 +147,6 @@ class Coach():
             self.nnet.save_checkpoint(folder=self.args.checkpoint, filename=self.getCheckpointFile(i))
             self.nnet.save_checkpoint(folder=self.args.checkpoint, filename='best.pth.tar')
 
-            mcts = MCTS(self.game, self.nnet, self.args)  # why?
             self.nnet.train(trainExamples)
 
     def getCheckpointFile(self, iteration):

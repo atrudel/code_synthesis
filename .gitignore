@@ -1,3 +1,6 @@
 **__pycache__
 **.ipynb_checkpointsarchive/
 *.ipynb_checkpoints
+ALPHAGOZERO/
+golai_zero/checkpoint/
+golai_zero/runs/
