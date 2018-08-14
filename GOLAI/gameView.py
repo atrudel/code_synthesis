@@ -156,6 +156,8 @@ class MainWindow(QMainWindow):
 		p2_color = QColor("yellow")
 
 		def draw_bar(left, right):
+			if left + right == 0:
+				return
 			leftcol = p1_color if left > right else p1_color.darker()
 			rightcol = p2_color if left < right else p2_color.darker()
 			barsize = self.ui.percent_bar.size()
@@ -262,7 +264,7 @@ def start(game = None, p1 = None, p2 = None):
 		return None
 	else:
 		ctx = multiprocessing.get_context('spawn')
-		proc = ctx.Process(target=_run, args=(game,))
+		proc = ctx.Process(target=_run, args=(game, p1, p2))
 		proc.start()
 		return proc
 

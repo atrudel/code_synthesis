@@ -55,7 +55,7 @@ def pad_pattern(pattern, shape):
 		raise Exception("wrong pattern or shape")
 
 	if (pattern.shape[0] > shape[0] or pattern.shape[1] > shape[1]):
-		raise Exception("pattern is bigger than target shape")
+		raise Exception("pattern {} is bigger than target shape {}".format(pattern.shape, shape))
 
 	hdiff = shape[1] - pattern.shape[1]
 	vdiff = shape[0] - pattern.shape[0]
