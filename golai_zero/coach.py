@@ -70,9 +70,11 @@ class Coach():
             temp = int(episodeStep < self.args.tempThreshold)
 
             pi = self.mcts.getActionProb(self.curProgram, temp)
-
+            
             if episodeStep == 1 and self.args.dirichlet_noise:
+                pi_org = deepcopy(pi)
                 pi = self.dirichlet_noise(pi)
+                    
 
             trainExamples.append([self.game.integerImageRepresentation(self.curProgram), pi, None])
             action = np.random.choice(len(pi), p=pi)

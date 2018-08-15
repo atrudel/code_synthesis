@@ -1,6 +1,8 @@
 import math
 import numpy as np
 from copy import deepcopy
+from time import sleep
+
 EPS = 1e-8
 
 class MCTS():
@@ -23,6 +25,8 @@ class MCTS():
             
         s = self.game.stringRepresentation(program)
         counts = [self.Nsa[(s,a)] if (s,a) in self.Nsa else 0 for a in range(self.args.vocabLen)]
+        print(counts)
+        sleep(5)
         
         if temp == 0:
             bestAction = np.argmax(counts)
