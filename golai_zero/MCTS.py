@@ -17,16 +17,14 @@ class MCTS():
         self.Ps = {}   # Policy from neural network
         self.Es = {}   # Stores the rewards from game.getGameEnded
     
-    def getActionProb(self, program, temp=1):
+    def getActionProb(self, program, iterations, temp=1):
         
-        for i in range(self.args.numMCTSSims):
+        for i in range(self.args.numMCTSSims * iterations):
             program_sim = deepcopy(program)
             self.search(program_sim)
             
         s = self.game.stringRepresentation(program)
         counts = [self.Nsa[(s,a)] if (s,a) in self.Nsa else 0 for a in range(self.args.vocabLen)]
-        print(counts)
-        sleep(5)
         
         if temp == 0:
             bestAction = np.argmax(counts)

@@ -68,11 +68,11 @@ class Coach():
         while True:
             episodeStep += 1
             temp = int(episodeStep < self.args.tempThreshold)
-
-            pi = self.mcts.getActionProb(self.curProgram, temp)
             
-            if episodeStep == 1 and self.args.dirichlet_noise:
-                pi_org = deepcopy(pi)
+            iterations = self.args.predictionLen - (episodeStep - 1)
+            pi = self.mcts.getActionProb(self.curProgram, iterations, temp)
+            
+            if self.args.dirichlet_noise:
                 pi = self.dirichlet_noise(pi)
                     
 
@@ -119,9 +119,10 @@ class Coach():
                 self.args.savePrograms = False
             self.wins = 0
 
+            self.mcts = MCTS(self.game, self.nnet, self.args)
+            
             for eps in range(self.args.numEps):
                 self.episode = eps
-                self.mcts = MCTS(self.game, self.nnet, self.args)
                 iterationTrainExamples += self.executeEpisode()
                 eps_time.update(time.time() - end)
                 end = time.time()

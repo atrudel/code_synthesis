@@ -36,7 +36,7 @@ args = dotdict({
     'arenaCompare': 40,
     'cpuct': 1,
     'eps': 0.25,
-    'alpha': 0.9, # 0.03 for Go 0.3 for Chess
+    'alpha': 0.3, # 0.03 for Go 0.3 for Chess
     'dirichlet_noise': True,
     
     # Game 
