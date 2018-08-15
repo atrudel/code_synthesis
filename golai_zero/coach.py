@@ -72,10 +72,9 @@ class Coach():
             iterations = self.args.predictionLen - (episodeStep - 1)
             pi = self.mcts.getActionProb(self.curProgram, iterations, temp)
             
-            if self.args.dirichlet_noise:
+            if self.args.dirichlet_noise and temp:
                 pi = self.dirichlet_noise(pi)
                     
-
             trainExamples.append([self.game.integerImageRepresentation(self.curProgram), pi, None])
             action = np.random.choice(len(pi), p=pi)
             self.game.getNextState(self.curProgram, action)
@@ -122,6 +121,8 @@ class Coach():
             self.mcts = MCTS(self.game, self.nnet, self.args)
             
             for eps in range(self.args.numEps):
+                if eps % 100 == 0:
+                    self.mcts = MCTS(self.game, self.nnet, self.args)
                 self.episode = eps
                 iterationTrainExamples += self.executeEpisode()
                 eps_time.update(time.time() - end)

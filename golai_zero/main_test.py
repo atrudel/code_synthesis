@@ -29,7 +29,7 @@ args = dotdict({
     'vocabLen': 2**(2*2), 
     
     # Simulations
-    'tempThreshold': 15,
+    'tempThreshold': 5,
     'updateThreshold': 0.6,
     'maxlenOfQueue': 200000,
     'numMCTSSims': 16,
