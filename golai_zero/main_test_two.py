@@ -6,7 +6,7 @@
 
 import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '../../game')))
-os.environ["CUDA_VISIBLE_DEVICES"]="0"
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 from coach import Coach
 from NeuralNetworkWrapper import NNetWrapper
 from GOLAI.arena import Arena
@@ -53,14 +53,14 @@ args = dotdict({
     'resnetBlocks': 10,
     'resnetInputDepth': 2,
     'resnetChannelDepth': 64,
-    'checkpoint': './checkpoint/',
+    'checkpoint': './checkpoint_expand/',
     'load_model': False,
     
     # Save and Load
     'savePrograms': True,
     'time': str(int(time.time())),
-    'output_dir': "./output/",
-    'load_folder_file': ('./checkpoint/', 'checkpoint_4.pth.tar'),
+    'output_dir': "./output_expand/",
+    'load_folder_file': ('./checkpoint_expand/', 'checkpoint_4.pth.tar'),
     'numItersForTrainExamplesHistory': 20,
 })
 

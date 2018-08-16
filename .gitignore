@@ -5,3 +5,6 @@ ALPHAGOZERO/
 golai_zero/checkpoint/
 golai_zero/runs/
 golai_zero/output
+output_expand/
+golai_zero/output_expand/
+golai_zero/checkpoint_expand/

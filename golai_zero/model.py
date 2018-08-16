@@ -43,6 +43,7 @@ class MainResnet(nn.Module):
     
     def forward(self, x):
         x = self.conv1(x)
+        x = self.b1(x)
         x = self.resnetblock(x)
         return x
 
@@ -88,7 +89,7 @@ class GolaiZero(nn.Module):
         
         
     def forward(self, x):
-        x = x.view(-1, 1, self.args.programWidth, self.args.programHeight)      
+        x = x.view(-1, self.args.resnetInputDepth, self.args.programWidth, self.args.programHeight)      
         features = self.resnet(x)
         policy_out = self.policyhead(features)
         value_out = self.valuehead(features)

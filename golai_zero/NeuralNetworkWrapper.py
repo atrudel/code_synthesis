@@ -110,7 +110,9 @@ class NNetWrapper():
         if self.args.cuda: program = program.contiguous().cuda()
         with torch.no_grad():
             program = Variable(program)
-            program = program.view(1, self.program_x, self.program_y)
+            
+            #print(program.size())
+            #program = program.view(1, 2, self.program_x, self.program_y)
 
             self.nnet.eval()
             pi, v = self.nnet(program)

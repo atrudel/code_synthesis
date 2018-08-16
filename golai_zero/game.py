@@ -26,6 +26,12 @@ class Game():
         print("getNextState was called with a full program")
         return program
         
+    
+    def neuralNetworkInput(self, player, opponent):
+        player_program = self.integerImageRepresentation(player)
+        opponent_program = self.integerImageRepresentation(opponent)
+        return np.concatenate([player_program, opponent_program], axis=-1).reshape(2, 6, 6)
+    
     def integerImageRepresentation(self, sequence):
 
         """ Creates the input for the neural network: """
@@ -109,10 +115,13 @@ class Game():
         return reward, ones, twos
 
     
-    def stringRepresentation(self, program):
+    def stringRepresentation(self, program, opponent):
 
-        program_string = ""
+        string_state = ""
         for integer in program:
-            program_string += str(integer)
+            string_state += str(integer)
             
-        return program_string
+        for integer in opponent:
+            string_state += str(integer)
+            
+        return string_state
