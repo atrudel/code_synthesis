@@ -3,10 +3,11 @@ from torch import Tensor
 import numpy as np
 import random
 from torch import Tensor
+from utils import *
 
 class Game():
     
-    def __init__(self, args, arena):
+    def __init__(self, arena):
         self.args = args
         self.arena = arena
         

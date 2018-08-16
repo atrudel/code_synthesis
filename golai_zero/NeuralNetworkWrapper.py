@@ -16,13 +16,13 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.autograd import Variable
-
+from utils import *
 from model import GolaiZero as golaiZero
 
 class NNetWrapper():
-    def __init__(self, args):
+    def __init__(self):
         self.args = args
-        self.nnet = golaiZero(self.args)
+        self.nnet = golaiZero()
         self.program_x = self.args.programWidth
         self.program_y = self.args.programHeight
         self.action_size = self.args.vocabLen

@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from utils import dotdict
 import torch.nn.functional as F
+from utils import *
 
 def conv3x3(inchannels, channels, ks=3, s=1, p=1):
     return nn.Conv2d(inchannels, channels, kernel_size=ks, stride=s, padding=p)
@@ -80,7 +81,7 @@ class PolicyHead(nn.Module):
         return x
 
 class GolaiZero(nn.Module):
-    def __init__(self, args):
+    def __init__(self):
         super().__init__()
         self.args = args
         self.resnet = MainResnet(ResnetBlock, self.args.resnetBlocks, self.args.resnetInputDepth, self.args.resnetChannelDepth)

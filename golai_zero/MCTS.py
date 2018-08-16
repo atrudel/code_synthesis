@@ -2,12 +2,13 @@ import math
 import numpy as np
 from copy import deepcopy
 from time import sleep
+from utils import *
 
 EPS = 1e-8
 
 class MCTS():
     
-    def __init__(self, game, nnet, args):
+    def __init__(self, game, nnet):
         self.game = game
         self.nnet = nnet
         self.args = args
