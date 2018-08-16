@@ -5,15 +5,26 @@ class dotdict(dict):
         return self[name]
 
 
+PROGRAM_WIDTH = 6
+PROGRAM_HEIGHT = 6
+PROGRAM_SIZE = 6
+VOCAB_LEN = 2**(2*2)
+CUDA = torch.cuda.is_available()
+EPOCHS = 20
+BATCH_SIZE = 1000
+RESNET_BLOCKS = 10
+RESNET_INPUT_DEPTH = 2
+RESNET_CHANNEL_DEPTH = 64
+
 args = dotdict({
     
     #Hardware
-    'cpus': 2,
+    'cpus': 20,
     'gpus': 2,
     
     #Program
     'numIters': 100000,
-    'numEps': 1000,
+    'numEps': 20,
     'vocabWidth': 2, 
     'vocabHeight': 2,
     'programSize': 6,

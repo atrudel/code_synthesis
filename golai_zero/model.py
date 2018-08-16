@@ -83,14 +83,13 @@ class PolicyHead(nn.Module):
 class GolaiZero(nn.Module):
     def __init__(self):
         super().__init__()
-        self.args = args
-        self.resnet = MainResnet(ResnetBlock, self.args.resnetBlocks, self.args.resnetInputDepth, self.args.resnetChannelDepth)
-        self.policyhead = PolicyHead(self.args.programSize, self.args.vocabLen, self.args.resnetChannelDepth)
-        self.valuehead = ValueHead(self.args.programSize, self.args.resnetChannelDepth)        
+        self.resnet = MainResnet(ResnetBlock, RESNET_BLOCKS, RESNET_INPUT_DEPTH, RESNET_CHANNEL_DEPTH)
+        self.policyhead = PolicyHead(PROGRAM_SIZE, VOCAB_LEN, RESNET_CHANNEL_DEPTH)
+        self.valuehead = ValueHead(PROGRAM_SIZE, RESNET_CHANNEL_DEPTH)        
         
         
     def forward(self, x):
-        x = x.view(-1, self.args.resnetInputDepth, self.args.programWidth, self.args.programHeight)      
+        x = x.view(-1, RESNET_INPUT_DEPTH, PROGRAM_WIDTH, PROGRAM_HEIGHT)      
         features = self.resnet(x)
         policy_out = self.policyhead(features)
         value_out = self.valuehead(features)

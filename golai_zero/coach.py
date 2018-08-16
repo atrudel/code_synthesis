@@ -95,7 +95,7 @@ class Coach():
         self.wins = 0
        
         for eps in range(len(self.trainOpponents)):
-
+            print("yayyayayayaya")
             self.episode = eps
             self.mcts = MCTS(self.game, self.nnet, self.args)
             iterationTrainExamples += self.executeEpisode()

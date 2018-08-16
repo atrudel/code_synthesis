@@ -21,13 +21,12 @@ from model import GolaiZero as golaiZero
 
 class NNetWrapper():
     def __init__(self):
-        self.args = args
         self.nnet = golaiZero()
-        self.program_x = self.args.programWidth
-        self.program_y = self.args.programHeight
-        self.action_size = self.args.vocabLen
+        self.program_x = PROGRAM_WIDTH
+        self.program_y = PROGRAM_HEIGHT
+        self.action_size = VOCAB_LEN
 
-        if self.args.cuda:
+        if CUDA:
             self.nnet.cuda()
 
     def train(self, examples):
@@ -36,7 +35,7 @@ class NNetWrapper():
         """
         optimizer = optim.Adam(self.nnet.parameters())
 
-        for epoch in range(self.args.epochs):
+        for epoch in range(EPOCHS):
             print('EPOCH ::: ' + str(epoch+1))
             self.nnet.train()
             data_time = AverageMeter()
@@ -45,18 +44,18 @@ class NNetWrapper():
             v_losses = AverageMeter()
             end = time.time()
 
-            bar = Bar('Training Net', max=int(len(examples)/self.args.batch_size))
+            bar = Bar('Training Net', max=int(len(examples)/BATCH_SIZE))
             batch_idx = 0
 
-            while batch_idx < int(len(examples)/self.args.batch_size):
-                sample_ids = np.random.randint(len(examples), size=self.args.batch_size)
+            while batch_idx < int(len(examples)/BATCH_SIZE):
+                sample_ids = np.random.randint(len(examples), size=BATCH_SIZE)
                 programs, pis, vs = list(zip(*[examples[i] for i in sample_ids]))
                 programs = torch.FloatTensor(np.array(programs).astype(np.float64))
                 target_pis = torch.FloatTensor(np.array(pis))
                 target_vs = torch.FloatTensor(np.array(vs).astype(np.float64))
 
                 # predict
-                if self.args.cuda:
+                if CUDA:
                     programs, target_pis, target_vs = programs.contiguous().cuda(), target_pis.contiguous().cuda(), target_vs.contiguous().cuda()
                 programs, target_pis, target_vs = Variable(programs), Variable(target_pis), Variable(target_vs)
 
@@ -86,7 +85,7 @@ class NNetWrapper():
                 # plot progress
                 bar.suffix  = '({batch}/{size}) Data: {data:.3f}s | Batch: {bt:.3f}s | Total: {total:} | ETA: {eta:} | Loss_pi: {lpi:.4f} | Loss_v: {lv:.3f}'.format(
                             batch=batch_idx,
-                            size=int(len(examples)/self.args.batch_size),
+                            size=int(len(examples)/BATCH_SIZE),
                             data=data_time.avg,
                             bt=batch_time.avg,
                             total=bar.elapsed_td,
@@ -107,7 +106,7 @@ class NNetWrapper():
 
         # preparing input
         program = torch.FloatTensor(program.astype(np.float64))
-        if self.args.cuda: program = program.contiguous().cuda()
+        if CUDA: program = program.contiguous().cuda()
         with torch.no_grad():
             program = Variable(program)
             
