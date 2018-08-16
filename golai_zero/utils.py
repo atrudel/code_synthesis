@@ -19,7 +19,7 @@ RESNET_CHANNEL_DEPTH = 64
 args = dotdict({
     
     #Hardware
-    'cpus': 20,
+    'cpus': 5,
     'gpus': 2,
     
     #Program

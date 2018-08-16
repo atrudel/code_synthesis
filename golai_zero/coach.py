@@ -19,17 +19,14 @@ from copy import deepcopy
 
 class Coach():
 
-    def __init__(self, game, nnet, iteration, opponents):
+    def __init__(self, game, nnet, iteration, opponents, file_path):
         self.game = game
         self.nnet = nnet
         self.episode = 0
         self.iteration = iteration
-        self.file_path = ""
-
         self.args = args
-        self.program_dir = os.path.join(self.args.output_dir, self.args.time + "/" + str(iteration))
-
-        self.mcts = MCTS(self.game, self.nnet, self.args)
+        self.file_path = file_path
+        self.mcts = MCTS(self.game, self.nnet)
         self.trainOpponents = opponents.tolist()
         self.nextOpponents = []
         self.wins = 0
@@ -89,15 +86,14 @@ class Coach():
         
         if self.iteration % self.args.saveProgramsInterval == 0:
             self.args.savePrograms = True
-            os.makedirs(self.file_path)
         else:
             self.args.savePrograms = False
         self.wins = 0
-       
+        
+        iterationTrainExamples = []
         for eps in range(len(self.trainOpponents)):
-            print("yayyayayayaya")
             self.episode = eps
-            self.mcts = MCTS(self.game, self.nnet, self.args)
+            self.mcts = MCTS(self.game, self.nnet)
             iterationTrainExamples += self.executeEpisode()
             
         return iterationTrainExamples, self.nextOpponents, self.wins

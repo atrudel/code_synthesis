@@ -25,8 +25,9 @@ class Train():
         self.file_path = ""
         self.args = args
         self.wins = 0
+        self.trainExamplesHistory = []
 
-    def run(self, iterationTrainExamples):
+    def run(self, iterationTrainExamples, i):
 
         self.trainExamplesHistory.append(iterationTrainExamples)
 
@@ -76,5 +77,3 @@ class Train():
                 self.trainExamplesHistory = Unpickler(f).load()
             f.closed
             self.skipFirstSelfPlay = True
-
-# Structure from: https://github.com/suragnair/alpha-zero-general/blob/master/Coach.py
