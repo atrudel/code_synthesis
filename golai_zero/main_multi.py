@@ -3,11 +3,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), '../../game')))
 from coach import Coach
 from NeuralNetworkWrapper import NNetWrapper
 from train import Train
-from multiprocessing import Pool
 from tensorboardX import SummaryWriter
 from GOLAI.arena import Arena
 import multiprocessing
+from multiprocessing import Pool
+import multiprocessing
 from game import Game
+from copy import deepcopy
 import numpy as np
 import random
 import torch
@@ -34,16 +36,20 @@ def createCoachData(nnet, opponents, iteration):
         os.makedirs(file_path)
     coachData = []
     for i in range(args.cpus):
-        coachData.append([nnet, gpuId[0], iteration, opponents[i], file_path])
+        cpuId = i
+        coachData.append([nnet, gpuId[0], cpuId, iteration, opponents[i], file_path])
         gpuId = np.roll(gpuId, 1)
     
     return coachData
     
     
-def generateData(nnet, gpuId, iteration, trainingData, file_path):    
-    g = Game(Arena(args.gameWidth, args.gameHeight))
-    c = Coach(g, nnet, iteration, trainingData, file_path)
+def generateData(nnet, gpuId, cpuId, iteration, trainingData, file_path):
+    with torch.cuda.device(int(gpuId)):
+        gnet = deepcopy(nnet)
     
+    g = Game(Arena(args.gameWidth, args.gameHeight))
+    c = Coach(g, gnet, iteration, trainingData, file_path, gpuId, cpuId)
+
     return c.learn()
 
 

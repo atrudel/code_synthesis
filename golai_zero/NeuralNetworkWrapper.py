@@ -28,6 +28,7 @@ class NNetWrapper():
 
         if CUDA:
             self.nnet.cuda()
+            #self.nnet = torch.nn.DataParallel(self.nnet, device_ids=[0, 1])
 
     def train(self, examples):
         """
@@ -97,26 +98,27 @@ class NNetWrapper():
             bar.finish()
 
 
-    def predict(self, program):
+    def predict(self, program, gpuId):
         """
         program: np array with program
-        """
-        # timing
-        start = time.time()
+        """       
+        with torch.cuda.device(int(gpuId)):
+            # timing
+            start = time.time()
 
-        # preparing input
-        program = torch.FloatTensor(program.astype(np.float64))
-        if CUDA: program = program.contiguous().cuda()
-        with torch.no_grad():
-            program = Variable(program)
-            
-            #print(program.size())
-            #program = program.view(1, 2, self.program_x, self.program_y)
+            # preparing input
+            program = torch.FloatTensor(program.astype(np.float64))
+            if CUDA: program = program.contiguous().cuda()
+            with torch.no_grad():
+                program = Variable(program)
 
-            self.nnet.eval()
-            pi, v = self.nnet(program)
+                #print(program.size())
+                #program = program.view(1, 2, self.program_x, self.program_y)
 
-        #print('PREDICTION TIME TAKEN : {0:03f}'.format(time.time()-start))
+                self.nnet.eval()
+                pi, v = self.nnet(program)
+
+                #print('PREDICTION TIME TAKEN : {0:03f}'.format(time.time()-start))
         return torch.exp(pi).data.cpu().numpy()[0], v.data.cpu().numpy()[0]
 
     def loss_pi(self, targets, outputs):

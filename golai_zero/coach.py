@@ -19,7 +19,9 @@ from copy import deepcopy
 
 class Coach():
 
-    def __init__(self, game, nnet, iteration, opponents, file_path):
+    def __init__(self, game, nnet, iteration, opponents, file_path, gpuId, cpuId):
+        self.cpuId = cpuId
+        self.gpuId = gpuId
         self.game = game
         self.nnet = nnet
         self.episode = 0
@@ -61,7 +63,7 @@ class Coach():
             temp = int(episodeStep < self.args.tempThreshold)
             
             iterations = self.args.predictionLen - (episodeStep - 1)
-            pi = self.mcts.getActionProb(self.curProgram, self.curOpponent, iterations, temp)
+            pi = self.mcts.getActionProb(self.curProgram, self.curOpponent, iterations, self.gpuId, temp)
             
             if self.args.dirichlet_noise and temp:
                 pi = self.dirichlet_noise(pi)
@@ -75,9 +77,9 @@ class Coach():
                 r, ones, twos, p1, p2 = self.game.getGameEnded(self.curProgram, self.curOpponent)
                 self.wins += r
                 if self.args.savePrograms:
-                    turn_program_into_file(p1, self.file_path + str(self.episode) +
+                    turn_program_into_file(p1, self.file_path + '/' + str(self.cpuId) + '-' + str(self.episode) +
                                            '-' + self.print_winner(r) + "-tiles-" + str(ones) + "-p1.rle")
-                    turn_program_into_file(p2, self.file_path + str(self.episode) +
+                    turn_program_into_file(p2, self.file_path + '/' + str(self.cpuId) + '-' + str(self.episode) +
                                            '-' + self.print_winner(-r) + "-tiles-" + str(twos) + "-p2.rle")
 
                 return[(x[0], x[1], r) for x in trainExamples]
@@ -90,10 +92,13 @@ class Coach():
             self.args.savePrograms = False
         self.wins = 0
         
+        self.mcts = MCTS(self.game, self.nnet)
+        
         iterationTrainExamples = []
         for eps in range(len(self.trainOpponents)):
             self.episode = eps
-            self.mcts = MCTS(self.game, self.nnet)
+            if eps % 10 == 0:
+                self.mcts = MCTS(self.game, self.nnet)
             iterationTrainExamples += self.executeEpisode()
             
         return iterationTrainExamples, self.nextOpponents, self.wins
