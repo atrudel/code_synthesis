@@ -19,9 +19,9 @@ from utils import *
 def createRandomOpp():
     
     opponents = []
-    value = list(range(0, args.vocabLen))
-    for i in range(args.numEps):
-        opponents.append(np.random.choice(value, args.predictionLen).tolist())
+    value = list(range(0, VOCAB_LEN))
+    for i in range(NUM_EPS):
+        opponents.append(np.random.choice(value, PREDICTION_LEN).tolist())
     
     return opponents
 
@@ -29,13 +29,13 @@ def createRandomOpp():
 def createCoachData(nnet, opponents, iteration):
     random.shuffle(opponents)
     opponents = np.array(opponents)
-    opponents = np.split(opponents, args.cpus)
-    gpuId = np.arange(args.gpus)
-    file_path = os.path.join(args.output_dir, args.time + "/" + str(iteration))
-    if iteration % args.saveProgramsInterval == 0:
+    opponents = np.split(opponents, CPUS)
+    gpuId = np.arange(GPUS)
+    file_path = os.path.join(OUTPUT_DIR, TIME + "/" + str(iteration))
+    if iteration % SAVE_PROGRAMS_INTERVAL == 0:
         os.makedirs(file_path)
     coachData = []
-    for i in range(args.cpus):
+    for i in range(CPUS):
         cpuId = i
         coachData.append([nnet, gpuId[0], cpuId, iteration, opponents[i], file_path])
         gpuId = np.roll(gpuId, 1)
@@ -47,7 +47,7 @@ def generateData(nnet, gpuId, cpuId, iteration, trainingData, file_path):
     with torch.cuda.device(int(gpuId)):
         gnet = deepcopy(nnet)
     
-    g = Game(Arena(args.gameWidth, args.gameHeight))
+    g = Game(Arena(GAME_WIDTH, GAME_HEIGHT))
     c = Coach(g, gnet, iteration, trainingData, file_path, gpuId, cpuId)
 
     return c.learn()
@@ -61,16 +61,16 @@ if __name__=="__main__":
     writer = SummaryWriter()
     opponents = createRandomOpp()
     
-    if args.load_model:
-        nnet.load_checkpoint(args.load_folder_file[0], args.load_folder_file[1])
+    if LOAD_MODEL:
+        nnet.load_checkpoint(LOAD_FOLDER_FILE[0], LOAD_FOLDER_FILE[1])
     
-    if args.load_model:
+    if LOAD_MODEL:
         print("Load trainExamples from file")
         t.loadTrainExamples()
         
-    for i in range(args.numIters):
+    for i in range(NUM_ITERS):
         coachData = createCoachData(nnet, opponents, i)
-        p = Pool(processes = args.cpus)
+        p = Pool(processes = CPUS)
         data = p.starmap(generateData, coachData)
         p.close()
         

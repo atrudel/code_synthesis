@@ -24,9 +24,9 @@ class Coach():
         self.gpuId = gpuId
         self.game = game
         self.nnet = nnet
+        self.savePrograms = False
         self.episode = 0
         self.iteration = iteration
-        self.args = args
         self.file_path = file_path
         self.mcts = MCTS(self.game, self.nnet)
         self.trainOpponents = opponents.tolist()
@@ -38,8 +38,8 @@ class Coach():
 
         dim = (len(probs))
         probs = np.array(probs, dtype=float)
-        new_probs = (1 - self.args.eps) * probs + self.args.eps * \
-        np.random.dirichlet(np.full(dim, self.args.alpha))
+        new_probs = (1 - EPS) * probs + EPS * \
+        np.random.dirichlet(np.full(dim, ALPHA))
 
         return new_probs
     
@@ -60,23 +60,23 @@ class Coach():
 
         while True:
             episodeStep += 1
-            temp = int(episodeStep < self.args.tempThreshold)
+            temp = int(episodeStep < TEMP_THRESHOLD)
             
-            iterations = self.args.predictionLen - (episodeStep - 1)
+            iterations = PREDICTION_LEN - (episodeStep - 1)
             pi = self.mcts.getActionProb(self.curProgram, self.curOpponent, iterations, self.gpuId, temp)
             
-            if self.args.dirichlet_noise and temp:
+            if DIRICHLET_NOISE and temp:
                 pi = self.dirichlet_noise(pi)
                     
             trainExamples.append([self.game.neuralNetworkInput(self.curProgram, self.curOpponent), pi, None])
             action = np.random.choice(len(pi), p=pi)
             self.game.getNextState(self.curProgram, action)
 
-            if episodeStep == self.args.predictionLen:
+            if episodeStep == PREDICTION_LEN:
                 self.nextOpponents.append(self.curProgram)
                 r, ones, twos, p1, p2 = self.game.getGameEnded(self.curProgram, self.curOpponent)
                 self.wins += r
-                if self.args.savePrograms:
+                if self.savePrograms:
                     turn_program_into_file(p1, self.file_path + '/' + str(self.cpuId) + '-' + str(self.episode) +
                                            '-' + self.print_winner(r) + "-tiles-" + str(ones) + "-p1.rle")
                     turn_program_into_file(p2, self.file_path + '/' + str(self.cpuId) + '-' + str(self.episode) +
@@ -86,10 +86,10 @@ class Coach():
 
     def learn(self):
         
-        if self.iteration % self.args.saveProgramsInterval == 0:
-            self.args.savePrograms = True
+        if self.iteration % SAVE_PROGRAMS_INTERVAL == 0:
+            self.savePrograms = True
         else:
-            self.args.savePrograms = False
+            self.savePrograms = False
         self.wins = 0
         
         self.mcts = MCTS(self.game, self.nnet)

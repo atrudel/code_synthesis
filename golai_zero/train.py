@@ -23,7 +23,6 @@ class Train():
         self.nnet = nnet
         self.episode = 0
         self.file_path = ""
-        self.args = args
         self.wins = 0
         self.trainExamplesHistory = []
 
@@ -31,7 +30,7 @@ class Train():
 
         self.trainExamplesHistory.append(iterationTrainExamples)
 
-        if len(self.trainExamplesHistory) > self.args.numItersForTrainExamplesHistory:
+        if len(self.trainExamplesHistory) > NUM_ITERS_FOR_TRAIN_EXAMPLES_HISTORY:
             print("len(trainExamplesHistory) =", len(self.trainExamplesHistory),
               " => remove the oldest trainExamples")
             self.trainExamplesHistory.pop(0)
@@ -43,7 +42,7 @@ class Train():
             trainExamples.extend(e)
         shuffle(trainExamples)
 
-        self.nnet.save_checkpoint(folder=self.args.checkpoint, filename=self.getCheckpointFile(i))
+        self.nnet.save_checkpoint(folder=CHECKPOINT, filename=self.getCheckpointFile(i))
         self.nnet.train(trainExamples)
 
         return self.nnet
@@ -52,7 +51,7 @@ class Train():
         return 'checkpoint_' + str(iteration) + '.pth.tar'
 
     def saveTrainExamples(self, iteration):
-        folder = self.args.checkpoint
+        folder = CHECKPOINT
 
         if not os.path.exists(folder):
             os.makedirs(folder)
@@ -63,7 +62,7 @@ class Train():
         f.closed
 
     def loadTrainExamples(self):
-        modelFile = os.path.join(self.args.load_folder_file[0], self.args.load_folder_file[1])
+        modelFile = os.path.join(LOAD_FOLDER_FILE[0], LOAD_FOLDER_FILE[1])
         examplesFile = modelFile+".examples"
 
         if not os.path.isfile(examplesFile):

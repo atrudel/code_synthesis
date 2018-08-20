@@ -8,7 +8,6 @@ from utils import *
 class Game():
     
     def __init__(self, arena):
-        self.args = args
         self.arena = arena
         
     def getNextState(self, program, action):
@@ -38,9 +37,9 @@ class Game():
         """ Creates the input for the neural network: """
         
         self.start = True
-        self.x = (self.args.programWidth // 2) - (self.args.vocabWidth // 2) 
-        self.y = (self.args.programHeight // 2) - (self.args.vocabHeight // 2) 
-        self.program = np.full((self.args.programWidth, self.args.programHeight), -1, dtype=np.int8)
+        self.x = (PROGRAM_WIDTH // 2) - (VOCAB_WIDTH // 2) 
+        self.y = (PROGRAM_HEIGHT // 2) - (VOCAB_HEIGHT // 2) 
+        self.program = np.full((PROGRAM_WIDTH, PROGRAM_HEIGHT), -1, dtype=np.int8)
         self.create_player_from_sequence(sequence)
         return self.program
     
@@ -57,11 +56,11 @@ class Game():
         binary = "{0:b}".format(digit)
         binary = binary.zfill(4)
         binary = list(str(binary))
-        return np.array(binary).reshape((self.args.vocabWidth, self.args.vocabHeight))
+        return np.array(binary).reshape((VOCAB_WIDTH, VOCAB_HEIGHT))
     
     def add_grid_to_program(self, grid):
-        for x in range(self.args.vocabWidth):
-            for y in range(self.args.vocabHeight):
+        for x in range(VOCAB_WIDTH):
+            for y in range(VOCAB_HEIGHT):
                 self.program[self.x + x][self.y + y] = grid[x][y]
     
     def next_cord(self):
@@ -72,27 +71,27 @@ class Game():
          #move right.
         
         if self.start:
-            self.x += self.args.vocabWidth
+            self.x += VOCAB_WIDTH
             self.start = False
         elif self.x != 0 and self.program[self.x - 1, self.y] != -1 \
-        and self.program[self.x, self.y + self.args.vocabHeight] == -1:
-            self.y += self.args.vocabHeight
+        and self.program[self.x, self.y + VOCAB_HEIGHT] == -1:
+            self.y += VOCAB_HEIGHT
         elif self.y != 0 and self.program[self.x, self.y - 1] != -1:
-            self.x -= self.args.vocabWidth
-        elif self.x + self.args.vocabWidth != self.args.programWidth and self.program[self.x + self.args.vocabWidth, self.y] != -1:
-            self.y -= self.args.vocabHeight
+            self.x -= VOCAB_WIDTH
+        elif self.x + VOCAB_WIDTH != PROGRAM_WIDTH and self.program[self.x + VOCAB_WIDTH, self.y] != -1:
+            self.y -= VOCAB_HEIGHT
         else:
-            self.x += self.args.vocabWidth
+            self.x += VOCAB_WIDTH
     
     def getInitProgram(self):
         
-        return np.full((self.args.predictionLen), -1, dtype=np.int8).tolist()
+        return np.full((PREDICTION_LEN), -1, dtype=np.int8).tolist()
     
     def getGameEnded(self, playerOne, playerTwo):
         playerOne = self.integerImageRepresentation(playerOne)
         playerTwo = self.integerImageRepresentation(playerTwo)
         self.arena.add_players(playerOne, playerTwo)
-        self.arena.run_steps(self.args.gameSteps)
+        self.arena.run_steps(GAME_STEPS)
         reward, ones, twos = self.selectWinner(self.arena.grid().flatten())
         return reward, ones, twos, playerOne, playerTwo
     

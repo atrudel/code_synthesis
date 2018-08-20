@@ -4,14 +4,11 @@ from copy import deepcopy
 from time import sleep
 from utils import *
 
-EPS = 1e-8
-
 class MCTS():
     
     def __init__(self, game, nnet):
         self.game = game
         self.nnet = nnet
-        self.args = args
         self.Qsa = {}  # Q values for state, actions 
         self.Nsa = {}  # Edge state, action was visited
         self.Ns = {}   # Board state was visited
@@ -20,12 +17,12 @@ class MCTS():
     
     def getActionProb(self, program, opponent, iterations, gpuId, temp=1):
         
-        for i in range(self.args.numMCTSSims * iterations):
+        for i in range(NUM_MCTS_SIMS * iterations):
             program_sim = deepcopy(program)
             self.search(program_sim, opponent, gpuId)
             
         s = self.game.stringRepresentation(program, opponent)
-        counts = [self.Nsa[(s,a)] if (s,a) in self.Nsa else 0 for a in range(self.args.vocabLen)]
+        counts = [self.Nsa[(s,a)] if (s,a) in self.Nsa else 0 for a in range(VOCAB_LEN)]
         
         if temp == 0:
             bestAction = np.argmax(counts)
@@ -54,11 +51,11 @@ class MCTS():
         cur_best = -float('inf')
         best_act = -1
         
-        for a in range(self.args.vocabLen):
+        for a in range(VOCAB_LEN):
             if (s,a) in self.Qsa:
-                u = self.Qsa[(s,a)] + self.args.cpuct*self.Ps[s][a]*math.sqrt(self.Ns[s])/(1+self.Nsa[(s,a)])
+                u = self.Qsa[(s,a)] + CPUCT*self.Ps[s][a]*math.sqrt(self.Ns[s])/(1+self.Nsa[(s,a)])
             else:
-                u = self.args.cpuct*self.Ps[s][a]*math.sqrt(self.Ns[s] + EPS)
+                u = CPUCT*self.Ps[s][a]*math.sqrt(self.Ns[s] + EPS)
             if u > cur_best:
                 cur_best = u
                 best_act = a

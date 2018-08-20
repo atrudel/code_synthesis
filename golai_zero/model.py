@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-from utils import dotdict
 import torch.nn.functional as F
 from utils import *
 

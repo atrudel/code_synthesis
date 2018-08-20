@@ -1,72 +1,54 @@
 import time
 import torch
-class dotdict(dict):
-    def __getattr__(self, name):
-        return self[name]
 
+#Hardware
+CPUS = 20
+GPUS = 2
 
+#Program
+NUM_ITERS = 100000
+NUM_EPS = 1000
+VOCAB_WIDTH = 2
+VOCAB_HEIGHT = 2
 PROGRAM_WIDTH = 6
 PROGRAM_HEIGHT = 6
 PROGRAM_SIZE = 6
+PREDICTION_LEN = (6*6) // (2*2)
 VOCAB_LEN = 2**(2*2)
-CUDA = torch.cuda.is_available()
+
+# Simulations 
+TEMP_THRESHOLD = 5
+UPDATE_THRESHOLD = 0.6
+MAX_LEN_OF_QUEUE = 200000
+NUM_MCTS_SIMS = 16
+ARENA_COMPARE = 40
+CPUCT = 1
+EPS = 1e-8
+ALPHA = 0.7
+DIRICHLET_NOISE = True
+    
+# Game
+GAME_STEPS = 100
+GAME_HEIGHT = 27
+GAME_WIDTH = 27
+    
+# Model
+LR = 0.01
+DROPOUT = 0.3
 EPOCHS = 20
 BATCH_SIZE = 1000
+CUDA = torch.cuda.is_available()
 RESNET_BLOCKS = 10
 RESNET_INPUT_DEPTH = 2
 RESNET_CHANNEL_DEPTH = 64
-
-args = dotdict({
+CHECKPOINT = './checkpoint/'
+LOAD_MODEL = False
     
-    #Hardware
-    'cpus': 20,
-    'gpus': 2,
-    
-    #Program
-    'numIters': 100000,
-    'numEps': 1000,
-    'vocabWidth': 2, 
-    'vocabHeight': 2,
-    'programSize': 6,
-    'programWidth': 6,
-    'programHeight': 6,
-    'predictionLen': (6*6) // (2*2),
-    'vocabLen': 2**(2*2), 
-    
-    # Simulations
-    'tempThreshold': 5,
-    'updateThreshold': 0.6,
-    'maxlenOfQueue': 200000,
-    'numMCTSSims': 16,
-    'arenaCompare': 40,
-    'cpuct': 1,
-    'eps': 0.25,
-    'alpha': 0.7, # 0.03 for Go 0.3 for Chess
-    'dirichlet_noise': True,
-    
-    # Game 
-    'gameSteps': 100,
-    'gameHeight': 27, 
-    'gameWidth': 27,
-    
-    # Model
-    'lr': 0.01,
-    'dropout': 0.3,
-    'epochs': 20,
-    'batch_size': 1000,
-    'cuda': torch.cuda.is_available(),
-    'resnetBlocks': 10,
-    'resnetInputDepth': 2,
-    'resnetChannelDepth': 64,
-    'checkpoint': './checkpoint/',
-    'load_model': False,
-    
-    # Save and Load
-    'savePrograms': True,
-    'saveProgramsInterval': 5,
-    'time': str(int(time.time())),
-    'output_dir': "./output/",
-    'program_dir': "",
-    'load_folder_file': ('./checkpoint/', 'checkpoint_4.pth.tar'),
-    'numItersForTrainExamplesHistory': 20,
-})
+# Save and Load
+SAVE_PROGRAMS = True
+SAVE_PROGRAMS_INTERVAL = 5
+TIME = str(int(time.time()))
+OUTPUT_DIR = "./output/"
+PROGRAM_DIR = ""
+LOAD_FOLDER_FILE = ['./checkpoint/', 'checkpoint_4.pth.tar']
+NUM_ITERS_FOR_TRAIN_EXAMPLES_HISTORY = 20
