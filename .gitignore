@@ -2,4 +2,7 @@ game/
 ./output/
 ./archive/
 **__pycache__
-**.ipynb_checkpoints
+**.ipynb_checkpointsarchive/
+notebooks/
+output/
+runs/

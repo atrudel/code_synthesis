@@ -9,7 +9,7 @@ from game.game_of_life.rle import Pattern
 from game.wrappers.GameContainer import GameContainer
 
 
-if len(sys.argv) != 2:
+if len(sys.argv) != 3:
     print(
 "Error: Takes one directory as an argument. The directory should include player files with \n\
 the .rle extension. Everyone plays against each other and get 3 points for a win and 1 point for a draw. \n\
@@ -17,8 +17,12 @@ Each score is added to the filename of each player and copied to a new folder un
 Example: python3 tournament_from_folder.py benchmark_players/test_players")
     exit(1)
 
-dir_name = os.path.abspath(sys.argv[1]) + '/'
-game = GameContainer(512, 512)
+benchmark_dir = os.path.abspath(sys.argv[1]) + '/'
+ready_programs_dir = os.path.abspath(sys.argv[1]) + '/'
+
+game = GameContainer(26, 26)
+
+
 output_dir = "./tournament-results/"
 run = int(time.time())
 save_dir = output_dir + str(run) + '/'
