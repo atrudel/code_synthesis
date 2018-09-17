@@ -11,12 +11,12 @@ class Dueling_DQN(nn.Module):
         
         h_size_a = 50
         h_size_b = 100
-        h_size_c = 120
+        h_size_c = 10
         s_size = N_TARGETS * 2
         
         self.lstm_p_a = nn.LSTM(input_size=N_INSTRUCTIONS, hidden_size=h_size_a, num_layers=2)
         self.lstm_p_b = nn.LSTM(input_size=(N_VARS * NUM_REGISTERS), hidden_size=h_size_b, num_layers=2)
-        self.lstm_p_c = nn.LSTM(input_size=N_VALS, hidden_size=h_size_c, num_layers=2)
+        self.lstm_p_c = nn.LSTM(input_size=1, hidden_size=h_size_c, num_layers=2)
         self.fc_s1 = nn.Linear(in_features=s_size, out_features=s_size)
         self.fc_s2 = nn.Linear(in_features=s_size, out_features=s_size)
         

@@ -21,9 +21,7 @@ def run_experiment_series(name, reward_functions, episodes):
     
     if isinstance(episodes, int):
         episodes = [episodes] * len(reward_functions)  
-#     with Pool(processes=len(reward_functions)) as pool:
-#         pool.starmap(run_experiment, zip(reward_functions, episodes, repeat(root_dir)))
-    for rw, ep in zip(reward_functions, episodes):
-        run_experiment(rw, ep, root_dir)
+    with Pool(processes=len(reward_functions)) as pool:
+        pool.starmap(run_experiment, zip(reward_functions, episodes, repeat(root_dir)))
         
-run_experiment_series("Test", reward_functions, 50000)
+run_experiment_series("03-VAL_scalar_encoding", reward_functions, 50000)

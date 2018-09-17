@@ -109,14 +109,14 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
                 break
         
         # Console output
-        if verbose and episode % log_freq == 0:
+        if verbose and (episode + 1) % log_freq == 0:
             print("Episode {} completed".format(episode + 1))
         
         # Log output
-        if log_dir is not None and episode % log_freq == 0:
+        if log_dir is not None and (episode + 1) % log_freq == 0:
             with open(log_file, "a") as f:
                 current_time = datetime.timedelta(seconds=(time.time()-start_time))
-                print("Episode {}: [time:{}]\n".format(episode+1, str(current_time), file=f))
+                print("Episode {}: [time:  {}]\n".format(episode+1, str(current_time)), file=f)
                 assess(Q, reward_func, file=f)
                 print("\n\n\n", file=f)
                 

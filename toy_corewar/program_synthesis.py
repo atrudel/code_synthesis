@@ -14,11 +14,11 @@ class Instruction():
         
         # variable and value embeddings: one hot encoding
         var_embedding = np.zeros((3,4))
-        val_embedding = np.zeros(20)
+        val_embedding = np.zeros(1)
         # handle the special case of ld, which uses the value embedding
         if self.opcode == 1:
             var_embedding[1][self.arg2-1] = 1
-            val_embedding[self.arg1] = 1
+            val_embedding[0] = self.arg1
         else:
             var_embedding[0][self.arg1-1] = 1
             var_embedding[1][self.arg2-1] = 1
@@ -33,7 +33,7 @@ class Instruction():
     def padding_embedding():
         instr_embedding = np.zeros(4)
         var_embedding = np.zeros(12)
-        val_embedding = np.zeros(20)
+        val_embedding = np.zeros(1)
         return instr_embedding, var_embedding, val_embedding
     
     def print(self, file=None, end=None):
