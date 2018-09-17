@@ -4,7 +4,7 @@ from model import Dueling_DQN
 import random
 import inspect
 import os
-import time
+import time, datetime
 from toyCorewar import ToyCorewar
 from environment import Env
 from program_synthesis import Program, Instruction
@@ -115,7 +115,8 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
         # Log output
         if log_dir is not None and episode % log_freq == 0:
             with open(log_file, "a") as f:
-                print("Episode {}: [time:{}]\n".format(episode+1, time.time()-start_time), file=f)
+                current_time = datetime.timedelta(seconds=(time.time()-start_time))
+                print("Episode {}: [time:{}]\n".format(episode+1, str(current_time), file=f))
                 assess(Q, reward_func, file=f)
                 print("\n\n\n", file=f)
                 
