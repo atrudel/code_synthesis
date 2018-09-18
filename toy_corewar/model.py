@@ -9,9 +9,9 @@ class Dueling_DQN(nn.Module):
     def __init__(self):
         super(Dueling_DQN, self).__init__()
         
-        h_size_a = 50
-        h_size_b = 100
-        h_size_c = 10
+        h_size_a = 10
+        h_size_b = 20
+        h_size_c = 5
         s_size = N_TARGETS * 2
         
         self.lstm_p_a = nn.LSTM(input_size=N_INSTRUCTIONS, hidden_size=h_size_a, num_layers=2)
