@@ -13,6 +13,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from tensorboardX import SummaryWriter
 
 def train(Q, reward_func, M, verbose=False, log_dir=None):
 
@@ -39,7 +40,7 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
     target_update_freq = 1000
 
     if verbose:
-        print("Starting training [reward = {}] for {} episodes...".format(
+        print("Starting training [reward function = {}] for {} episodes...".format(
             reward_func.__name__, M))
     
     if log_dir is not None:
@@ -51,6 +52,8 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
         os.makedirs(model_dir)
     
     start_time = time.time()
+    writer = SummaryWriter()
+    
     for episode in range(M):
         s = env.reset()
 
@@ -117,8 +120,12 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
             with open(log_file, "a") as f:
                 current_time = datetime.timedelta(seconds=(time.time()-start_time))
                 print("Episode {}: [time:  {}]\n".format(episode+1, str(current_time)), file=f)
-                assess(Q, reward_func, file=f)
+                test_env = assess(Q, reward_func, file=f)
                 print("\n\n\n", file=f)
-                
+                # log to Tensorboard
+                writer.add_scalars(log_dir, {'rewards': test_env.total_reward}, episode)
                 
         # Model saving
+        ## To be added if needed
+        
+    writer.close()
