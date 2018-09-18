@@ -1,4 +1,5 @@
 import numpy as np
+from config import *
 
 class Instruction():
     def __init__(self, opcode, arg1, arg2, arg3):
@@ -9,12 +10,14 @@ class Instruction():
         
     def embeddings(self):
         # instruction embedding: one hot encoding
-        instr_embedding = np.zeros(4)
+        instr_embedding = np.zeros(N_INSTRUCTIONS)
         instr_embedding[self.opcode - 1] = 1
         
-        # variable and value embeddings: one hot encoding
-        var_embedding = np.zeros((3,4))
+        # variable embeddings: one hot encoding
+        var_embedding = np.zeros((N_VARS, NUM_REGISTERS))
+        # value encoding: direct scalar value
         val_embedding = np.zeros(1)
+        
         # handle the special case of ld, which uses the value embedding
         if self.opcode == 1:
             var_embedding[1][self.arg2-1] = 1
@@ -31,8 +34,8 @@ class Instruction():
         return np.array([self.opcode, self.arg1, self.arg2, arg3], dtype=int)
     
     def padding_embedding():
-        instr_embedding = np.zeros(4)
-        var_embedding = np.zeros(12)
+        instr_embedding = np.zeros(N_INSTRUCTIONS)
+        var_embedding = np.zeros(N_VARS * NUM_REGISTERS)
         val_embedding = np.zeros(1)
         return instr_embedding, var_embedding, val_embedding
     
@@ -44,7 +47,7 @@ class Instruction():
         
 
 class Program():
-    def __init__(self, instructions=None, maxlen=5):
+    def __init__(self, instructions=None, maxlen=MAX_LENGTH):
         self.instructions = instructions if instructions is not None else []
         self.maxlen = maxlen
     

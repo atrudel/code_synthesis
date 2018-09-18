@@ -18,26 +18,20 @@ from tensorboardX import SummaryWriter
 def train(Q, reward_func, M, verbose=False, log_dir=None):
 
     env = Env(reward_func)
-
-    replay_buffer_size = 100000
-    learning_starts = 100
-    learning_freq = 4
-    batch_size=32
     num_actions = env.action_space_n
-    
-    log_freq = 100
-    save_freq = 5000
-
-    gamma = 0.99
+   
     epsilon_schedule = LinearSchedule(schedule_timesteps=M, final_p=0.1)
-    replay_buffer = deque(maxlen=replay_buffer_size)
+    replay_buffer = deque(maxlen=REPLAY_BUFFER_SIZE)
     Q_target = Dueling_DQN()
     Q_target.load_state_dict(Q.state_dict())
-
+    if CUDA:
+        Q.cuda()
+        Q_target.cuda()
+    
     loss_function = torch.nn.MSELoss()
-    optimizer = optim.RMSprop(Q.parameters())
+    optimizer = optim.RMSprop(Q.parameters(), lr=LR)
     num_parameter_updates = 0
-    target_update_freq = 1000
+    writer = SummaryWriter()
 
     if verbose:
         print("Starting training [reward function = {}] for {} episodes...".format(
@@ -52,14 +46,12 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
         os.makedirs(model_dir)
     
     start_time = time.time()
-    writer = SummaryWriter()
-    
     for episode in range(M):
         s = env.reset()
 
         for t in range(MAX_LENGTH):
             # Select action with E-greedy policy
-            if episode < learning_starts or np.random.rand() < epsilon_schedule.value(episode):
+            if episode < LEARNING_STARTS or np.random.rand() < epsilon_schedule.value(episode):
                 a = np.random.randint(num_actions)
             else:
                 a = Q(state_to_tensors(s)).argmax(1).item()
@@ -74,7 +66,7 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
             s = s_prime
 
             # EXPERIENCE REPLAY
-            if (episode > learning_starts and episode % learning_freq == 0):
+            if (episode > LEARNING_STARTS and episode % LEARNING_FREQ == 0):
                 # Sample from the replay buffer
                 transitions = random.sample(replay_buffer, batch_size)
 
@@ -94,7 +86,7 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
                 a_prime =  Q(next_state_batch).argmax(1).unsqueeze(1)
                 q_s_a_prime = Q_target(next_state_batch).gather(1, a_prime).squeeze()
                 q_s_a_prime *= 1 - done_batch
-                target_q_s_a = reward_batch + gamma * q_s_a_prime
+                target_q_s_a = reward_batch + GAMMA * q_s_a_prime
                 target_q_s_a = target_q_s_a.detach()
 
                 # Backprop
@@ -105,18 +97,18 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
                 num_parameter_updates += 1
 
                 # Update target DQN every once in a while
-                if num_parameter_updates % target_update_freq == 0:
+                if num_parameter_updates % TARGET_UPDATE_FREQ == 0:
                     Q_target.load_state_dict(Q.state_dict())
 
             if done:
                 break
         
         # Console output
-        if verbose and (episode + 1) % log_freq == 0:
+        if verbose and (episode + 1) % LOG_FREQ == 0:
             print("Episode {} completed".format(episode + 1))
         
         # Log output
-        if log_dir is not None and (episode + 1) % log_freq == 0:
+        if log_dir is not None and (episode + 1) % LOG_FREQ == 0:
             with open(log_file, "a") as f:
                 current_time = datetime.timedelta(seconds=(time.time()-start_time))
                 print("Episode {}: [time:  {}]\n".format(episode+1, str(current_time)), file=f)

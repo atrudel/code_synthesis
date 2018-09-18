@@ -1,10 +1,11 @@
+from config import *
 from toyCorewar import ToyCorewar
 from program_synthesis import Program, Instruction
 import numpy as np
 import torch
 
 class Env():
-    action_space_n = 225
+    action_space_n = NUM_ACTIONS
     
     def __init__(self, reward_func):
         '''The reward function must take a ToyCorewar instance as an argument and return a reward'''
