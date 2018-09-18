@@ -1,7 +1,7 @@
 import torch
 
 # Hardware usage
-CUDA = torch.cuda.is_available() # boolean
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 MULTIPROCESSING = True
 
 # Neural network

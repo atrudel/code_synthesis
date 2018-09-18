@@ -3,6 +3,7 @@ from model import Dueling_DQN
 from train import train
 from reward import *
 import torch
+import multiprocessing
 from multiprocessing import Pool
 from itertools import repeat
 
@@ -32,4 +33,5 @@ def run_experiment_series(name, reward_functions, episodes):
 
             
 if __name__ == '__main__':
-    run_experiment_series("test", reward_functions, 10000)
+     run_experiment_series("04-Small_LSTM", reward_functions, 50000)
+#    run_experiment_series("test", [maximize_all_registers], 500)

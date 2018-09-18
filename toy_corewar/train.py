@@ -24,9 +24,8 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
     replay_buffer = deque(maxlen=REPLAY_BUFFER_SIZE)
     Q_target = Dueling_DQN()
     Q_target.load_state_dict(Q.state_dict())
-    if CUDA:
-        Q.cuda()
-        Q_target.cuda()
+    Q.to(DEVICE)
+    Q_target.to(DEVICE)
     
     loss_function = torch.nn.MSELoss()
     optimizer = optim.RMSprop(Q.parameters(), lr=LR)
@@ -68,15 +67,15 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
             # EXPERIENCE REPLAY
             if (episode > LEARNING_STARTS and episode % LEARNING_FREQ == 0):
                 # Sample from the replay buffer
-                transitions = random.sample(replay_buffer, batch_size)
+                transitions = random.sample(replay_buffer, BATCH_SIZE)
 
                 # Extract each batch of elements from the sample of transitions
                 batch = Transition(*zip(*transitions))
                 state_batch = batch_to_tensors(batch.state)
-                action_batch = torch.LongTensor(batch.action).unsqueeze(1)
-                reward_batch = torch.tensor(batch.reward, dtype=torch.float)
+                action_batch = torch.LongTensor(batch.action).unsqueeze(1).to(DEVICE)
+                reward_batch = torch.tensor(batch.reward, dtype=torch.float).to(DEVICE)
                 next_state_batch = batch_to_tensors(batch.next_state)
-                done_batch = torch.tensor(batch.done, dtype=torch.float)
+                done_batch = torch.tensor(batch.done, dtype=torch.float).to(DEVICE)
 
                 # Get the current network's estimations for the q-values of all (state, action)
                 # pairs in the batch

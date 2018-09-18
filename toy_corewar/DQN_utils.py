@@ -33,10 +33,10 @@ class LinearSchedule(object):
 def state_to_tensors(state):
     prog_state, mem_state = state
     instr, var, val = zip(*prog_state)
-    instr = torch.tensor(instr).unsqueeze(1)
-    var = torch.tensor(var).unsqueeze(1)
-    val = torch.tensor(val).unsqueeze(1)
-    mem = torch.tensor(mem_state).view(-1).unsqueeze(0)
+    instr = torch.tensor(instr).unsqueeze(1).to(DEVICE)
+    var = torch.tensor(var).unsqueeze(1).to(DEVICE)
+    val = torch.tensor(val).unsqueeze(1).to(DEVICE)
+    mem = torch.tensor(mem_state).view(-1).unsqueeze(0).to(DEVICE)
     return instr, var, val, mem
 
 def batch_to_tensors(batch):
