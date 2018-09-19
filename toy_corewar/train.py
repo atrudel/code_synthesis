@@ -64,8 +64,8 @@ def train(Q, reward_func, M, verbose=False, log_dir=None):
             # New state becomes current state
             s = s_prime
 
-            # EXPERIENCE REPLAY
-            if (episode > LEARNING_STARTS and episode % LEARNING_FREQ == 0):
+            # EXPERIENCE REPLAY (every LEARNING_FREQth time step after learning starts) 
+            if (episode > LEARNING_STARTS and (episode * MAX_LENGTH + t) % LEARNING_FREQ == 0):
                 # Sample from the replay buffer
                 transitions = random.sample(replay_buffer, BATCH_SIZE)
 
