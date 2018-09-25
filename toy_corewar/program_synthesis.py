@@ -27,17 +27,14 @@ class Instruction():
             var_embedding[1][self.arg2-1] = 1
             if self.arg3 is not None:
                 var_embedding[2][self.arg3-1] = 1
-        return instr_embedding, var_embedding.reshape(-1), val_embedding
+        return np.concatenate((instr_embedding, var_embedding.reshape(-1), val_embedding))
         
     def to_byte_sequence(self):
         arg3 = self.arg3 if self.arg3 is not None else 0
         return np.array([self.opcode, self.arg1, self.arg2, arg3], dtype=int)
     
     def padding_embedding():
-        instr_embedding = np.zeros(N_INSTRUCTIONS)
-        var_embedding = np.zeros(N_VARS * NUM_REGISTERS)
-        val_embedding = np.zeros(1)
-        return instr_embedding, var_embedding, val_embedding
+        return np.zeros(N_INSTRUCTIONS + N_VARS * NUM_REGISTERS + 1)
     
     def print(self, file=None, end=None):
         labels = ['ld', 'st', 'add', 'sub']

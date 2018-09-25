@@ -3,6 +3,7 @@ from toyCorewar import ToyCorewar
 from program_synthesis import Program, Instruction
 import numpy as np
 import torch
+import math
 
 class Env():
     action_space_n = NUM_ACTIONS
@@ -10,6 +11,7 @@ class Env():
     def __init__(self, reward_func):
         '''The reward function must take a ToyCorewar instance as an argument and return a reward'''
         self.reward_func = reward_func
+        self.best_score = -math.inf
     
     def step(self, action):
         '''action is a number between 0 and action_space_n'''
@@ -37,10 +39,13 @@ class Env():
         # Calculate reward
         _,_, reward = self.reward_func(cw) #if opcode is not None else (None, None, 0)
         self.done = done
+        
         # Reward is only given on the final state
-        if not self.done:
+        if self.done:
+            self.total_reward += reward
+            self.best_score = max(self.total_reward, self.best_score)
+        else:
             reward = 0
-        self.total_reward += reward
         
         return state, reward, done, None
         

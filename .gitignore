@@ -8,3 +8,10 @@ golai_zero/output
 output_expand/
 golai_zero/output_expand/
 golai_zero/checkpoint_expand/
+*output*
+*runs*
+*checkpoint*
+toy_corewar/main.py
+toy_corewar/Experiments/*
+toy_corewar/__pycache__
+toy_corewar/model.pyc

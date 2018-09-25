@@ -1,19 +1,41 @@
 import os
 from model import Dueling_DQN
-from train import train
+from train import *
 from reward import *
 import torch
 import multiprocessing
 from multiprocessing import Pool
 from itertools import repeat
+import inspect
+
+
+parameters = dict(
+    h_size = 35,
+    middle_size = 128,
+    lstm_layers = 2,
+    learning_starts = 100,
+    learning_freq = 4,
+    target_update_freq = 1000, 
+    lr = 0.01,
+    gamma = 0.99,
+    batch_size = 32,
+    replay_buffer_size = 100000
+)
 
 def run_experiment(reward_func, episodes, root_dir):
+    # Conduct experiment and output logs in a separate directory
     log_dir = os.path.join(root_dir, reward_func.__name__)
     os.makedirs(log_dir)
-    Q = Dueling_DQN()
-    train(Q, reward_func, episodes, log_dir=log_dir, verbose=True)
-    final_save_path = os.path.join(log_dir, "models", "final")
-    torch.save(Q.state_dict(), final_save_path)
+    DDQN, score, episode = train_DQN(reward_func, episodes, **parameters, epsilon_decay_steps=episodes, log_dir=log_dir, verbose=True)
+    
+    # Output best score and corresponding episode in the summary
+    with open(os.path.join(root_dir, "Summary"), "a") as f:
+        print("Reward function: \n\n{}\nScore:   {}\nEpisode: {}\n\n".format(
+            inspect.getsource(reward_func), score, episode), file=f)
+    
+    # Save best performing DDQN
+    best_save_path = os.path.join(log_dir, "models", "best")
+    torch.save(DDQN.state_dict(), best_save_path)
     
 def run_experiment_series(name, reward_functions, episodes):
     os.makedirs("Experiments", exist_ok=True)
@@ -33,5 +55,5 @@ def run_experiment_series(name, reward_functions, episodes):
 
             
 if __name__ == '__main__':
-     run_experiment_series("04-Small_LSTM", reward_functions, 50000)
-#    run_experiment_series("test", [maximize_all_registers], 500)
+    run_experiment_series("bibi", reward_functions, 500)
+#   run_experiment_series("test_LSTM_fusion", [maximize_all_registers], 50000)
