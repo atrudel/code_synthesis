@@ -2,8 +2,8 @@ import sigopt
 from reward import *
 import torch
 import math
-from environment import Env
-from train import train_DQN
+from game.environment import Env
+from DQN.train import train_DQN
 
 
 MAX_EPISODES = 100000

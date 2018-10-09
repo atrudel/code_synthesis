@@ -1,6 +1,6 @@
 from config import *
 import numpy as np
-from toyCorewar import ToyCorewar
+from game.toyCorewar import ToyCorewar
 from config import *
 
 # Specific values for all registers, without division

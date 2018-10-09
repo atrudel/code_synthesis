@@ -1,7 +1,7 @@
 import torch
 from collections import deque, namedtuple
 from config import *
-from environment import Env
+from game.environment import Env
 
 Transition = namedtuple('Transition',
                         ('state', 'action', 'reward', 'next_state', 'done'))

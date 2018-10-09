@@ -1,13 +1,13 @@
-from DQN_utils import *
+from DQN.DQN_utils import *
 from config import *
-from model import Dueling_DQN
+from DQN.model import Dueling_DQN
 import random
 import inspect
 import os
 import time, datetime
-from toyCorewar import ToyCorewar
-from environment import Env
-from program_synthesis import Program, Instruction
+from game.toyCorewar import ToyCorewar
+from game.environment import Env
+from game.program_synthesis import Program, Instruction
 import numpy as np
 
 import torch
@@ -60,6 +60,7 @@ def train_DQN(
         log_file = os.path.join(log_dir, "logs")
         with open(log_file, "w") as f:
             print("Starting training for {} episodes...".format(episodes), file=f)
+            print("Algorithm: Dueling double DQN", file=f)
             print("Reward function:\n\n{}\n\n\n".format(inspect.getsource(reward_func)), file=f)
         model_dir = os.path.join(log_dir, "models")
         os.makedirs(model_dir)

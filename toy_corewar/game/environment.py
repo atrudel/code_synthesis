@@ -1,6 +1,6 @@
 from config import *
-from toyCorewar import ToyCorewar
-from program_synthesis import Program, Instruction
+from game.toyCorewar import ToyCorewar
+from game.program_synthesis import Program, Instruction
 import numpy as np
 import torch
 import math

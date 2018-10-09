@@ -1,6 +1,6 @@
 import os
-from model import Dueling_DQN
-from train import *
+from DQN.model import Dueling_DQN
+from DQN.train import *
 from reward import *
 import torch
 import multiprocessing
