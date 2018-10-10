@@ -42,17 +42,3 @@ def batch_to_tensors(batch):
     prog = torch.cat(prog_tensors, dim=1)
     mem = torch.cat(mem_tensors, dim=0)
     return prog, mem
-
-def assess(Q, reward_func, file=None, print=True):
-    env = Env(reward_func)
-    s = env.reset()
-    
-    for t in range(MAX_LENGTH):
-        a = Q(state_to_tensors(s)).argmax(1).item()
-        s_prime, reward, done, info = env.step(a)
-        s = s_prime
-        if done:
-            break
-    if print:
-        env.print_details(file=file)
-    return env.total_reward

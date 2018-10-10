@@ -19,7 +19,7 @@ TARGET_UPDATE_FREQ = 1000
 
 # Logging parameter
 LOG_FREQ = 100
-ASSESS_FREQ = 50
+ASSESS_FREQ = 10
 SAVE_FREQ = 5000 #Not implemented yet
 
 # Toy Corewar settings
