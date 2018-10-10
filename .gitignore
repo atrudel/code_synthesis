@@ -15,3 +15,4 @@ toy_corewar/main.py
 toy_corewar/Experiments/*
 toy_corewar/__pycache__
 toy_corewar/model.pyc
+__pycache__
