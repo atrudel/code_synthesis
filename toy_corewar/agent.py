@@ -1,6 +1,7 @@
 import os
 import inspect
 import time, datetime
+import os
 from config import *
 from game.environment import Env
 from tensorboardX import SummaryWriter
@@ -16,6 +17,7 @@ class Agent:
         self.model = None
         self.best_model = None
     
+    
     ## Methods that need to be implemented in the child classes
     
     def train(self, reward_func, episodes):
@@ -25,12 +27,22 @@ class Agent:
         raise NotImplementedError("You need to implement an act method in your class!")
     
     def load(self, path):
-        pass
-    
-    def save(self, path):
-        pass
-    
+        raise NotImplementedError("You need to implement an act method in your class!")
+
+        
     ## Methods that are implemented in the Agent class
+    
+    def save(self, name, best=False):
+        if self.log_dir is not None:
+            path = os.path.join(self.log_dir, "models")
+            os.makedirs(path, exist_ok=True)
+            path = os.path.join(path, name)
+        else:
+            path = name
+        if best:
+            torch.save(self.best_model.state_dict(), path)
+        else:
+            torch.save(self.model.state_dict(), path)
     
     def assess(self, reward_func, episode=None, print=False, file=None):
         env = Env(reward_func)

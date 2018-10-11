@@ -103,6 +103,9 @@ class DQN_Agent(Agent):
             # Assess agent performance (and keep track of the best one)
             elif (episode + 1) % ASSESS_FREQ == 0:
                 self.assess(reward_func, episode=episode)
+            # Save model periodically
+            if SAVE_FREQ > 0 and (episode + 1) % SAVE_FREQ == 0:
+                self.save("Episode_{}".format(episode + 1))
                     
     def experience_replay(self):
         # Sample from the replay buffer
@@ -137,6 +140,4 @@ class DQN_Agent(Agent):
         # Update target DQN every once in a while
         if self.num_parameter_updates % self.target_update_freq == 0:
             self.Q_target.load_state_dict(self.Q.state_dict())
-
-
                 
