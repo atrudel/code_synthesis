@@ -9,6 +9,7 @@ from multiprocessing import Pool
 import argparse
 import json
 from DQN.DQN_agent import DQN_Agent
+from Actor_Critic.AC_agent import AC_Agent
 
 def unpack(args):
     run_training(**args)

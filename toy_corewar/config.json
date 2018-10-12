@@ -47,6 +47,16 @@
                 "batch_size": 32,
                 "replay_buffer_size": 100000
             }
+        },
+        "AC": {
+            "agent": "AC_Agent",
+            "parameters": {
+                "h_size": 35,
+                "middle_size": 128,
+                "lstm_layers": 2,
+                "lr": 0.01,
+                "gamma": 0.99
+            }
         }
     }
 }
