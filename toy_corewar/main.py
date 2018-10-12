@@ -1,5 +1,4 @@
 import os
-from DQN.model import Dueling_DQN
 from DQN.DQN_agent import DQN_Agent
 from reward import *
 import torch
@@ -10,26 +9,47 @@ import inspect
 import argparse
 from config import *
 
+presets = {
+    'DQN': {
+        'agent': DQN_Agent,
+        'parameters': dict(
+            h_size = 35,
+            middle_size = 128,
+            lstm_layers = 2,
+            learning_starts = 100,
+            learning_freq = 4,
+            target_update_freq = 1000, 
+            lr = 0.01,
+            gamma = 0.99,
+            batch_size = 32,
+            replay_buffer_size = 100000,
+            epsilon_decay_steps = 50000
+        )
+    },
+    'PG': {
+        #'agent': PG_Agent,
+        'parameters': dict(
+            h_size = 35,
+            middle_size = 128,
+            lstm_layers = 2,
+            learning_starts = 100,
+            learning_freq = 4,
+            target_update_freq = 1000, 
+            lr = 0.01,
+            gamma = 0.99,
+            batch_size = 32,
+            replay_buffer_size = 100000
+        )
+    }
+}
 
-parameters = dict(
-    h_size = 35,
-    middle_size = 128,
-    lstm_layers = 2,
-    learning_starts = 100,
-    learning_freq = 4,
-    target_update_freq = 1000, 
-    lr = 0.01,
-    gamma = 0.99,
-    batch_size = 32,
-    replay_buffer_size = 100000
-)
-
-def run_experiment(reward_func, episodes, root_dir):
+def run_experiment(preset, reward_func, episodes, root_dir):
     
     # Conduct experiment and output logs in a separate directory
+    preset = presets[preset]
     log_dir = os.path.join(root_dir, reward_func.__name__)
     os.makedirs(log_dir)
-    agent = DQN_Agent(**parameters, epsilon_decay_steps=episodes, verbose=True, log_dir=log_dir)
+    agent = preset['agent'](**preset['parameters'], verbose=True, log_dir=log_dir)
     agent.train(reward_func, episodes)
     score, episode = agent.best_performance()
     
@@ -41,7 +61,10 @@ def run_experiment(reward_func, episodes, root_dir):
     # Save best performing Agent
     agent.save("best", best=True)
     
-def run_experiment_series(name, reward_functions, episodes):
+def run_experiment_series(preset, name, reward_functions, episodes):
+    if not preset in presets:
+        raise Exception("Unknown preset")
+
     os.makedirs("Experiments", exist_ok=True)
     root_dir = os.path.join("Experiments", name)
     os.makedirs(root_dir)
@@ -52,17 +75,17 @@ def run_experiment_series(name, reward_functions, episodes):
     if MULTIPROCESSING:
         multiprocessing.set_start_method('spawn')
         with Pool(processes=len(reward_functions)) as pool:
-            pool.starmap(run_experiment, zip(reward_functions, episodes, repeat(root_dir)))
+            pool.starmap(run_experiment, zip(repeat(preset), reward_functions, episodes, repeat(root_dir)))
     else:
         for reward_func, ep in zip(reward_functions, episodes):
-            run_experiment(reward_func, ep, root_dir)
+            run_experiment(preset, reward_func, ep, root_dir)
 
             
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run an experiment series')
     parser.add_argument('name', help="name of the experiment")
     parser.add_argument('-e', '--episodes', type=int, default=MAX_EPISODES, help='number of episodes for each training')
+    parser.add_argument('-p', '--preset', default='DQN', help='preset to use')
     args = parser.parse_args()
     
-    #run_experiment_series(args.name, reward_functions, args.episodes)
-    run_experiment_series(args.name, [maximize_all_registers], args.episodes)
+    run_experiment_series(args.preset, args.name, [maximize_all_registers], args.episodes)

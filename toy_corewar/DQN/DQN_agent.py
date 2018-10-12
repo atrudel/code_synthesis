@@ -15,7 +15,6 @@ class DQN_Agent(Agent):
                  h_size, 
                  middle_size, 
                  lstm_layers, 
-                 epsilon_decay_steps,
                  learning_starts,
                  learning_freq,
                  target_update_freq,
@@ -23,6 +22,7 @@ class DQN_Agent(Agent):
                  gamma,
                  batch_size,
                  replay_buffer_size,
+                 epsilon_decay_steps,
                  verbose=False, log_dir=None):
         
         Agent.__init__(self, verbose, log_dir)
