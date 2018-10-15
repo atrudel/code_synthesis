@@ -1,0 +1,55 @@
+{
+    "settings": {
+        "DEVICE" :"cuda", 
+        "MULTIPROCESSING": true,
+
+        "MAX_EPISODES": 50000,
+
+        "ASSESS_FREQ": 20,
+        "LOG_FREQ": 20,
+        "SAVE_FREQ": 0,
+
+        "toy_corewar": {
+            "NUM_ACTIONS": 225,
+            "NUM_REGISTERS": 4,
+            "MAX_LENGTH": 5,
+            "N_INSTRUCTIONS": 4,
+            "N_VARS": 3,
+            "N_VALS": 20,
+            "N_TARGETS": 4
+        }
+    },
+    "presets": {
+        "DQN": {
+            "agent": "DQN_Agent",
+            "parameters": {
+                "h_size": 35,
+                "middle_size": 128,
+                "lstm_layers": 2,
+                "learning_starts": 100,
+                "learning_freq": 4,
+                "target_update_freq": 1000, 
+                "lr": 0.01,
+                "gamma": 0.99,
+                "batch_size": 32,
+                "replay_buffer_size": 100000,
+                "epsilon_decay_steps": 50000
+            }
+        },
+        "PG": {
+            "agent": "PG_Agent",
+            "parameters": {
+                "h_size": 35,
+                "middle_size": 128,
+                "lstm_layers": 2,
+                "learning_starts": 100,
+                "learning_freq": 4,
+                "target_update_freq": 1000, 
+                "lr": 0.01,
+                "gamma": 0.99,
+                "batch_size": 32,
+                "replay_buffer_size": 100000
+            }
+        }
+    }
+}

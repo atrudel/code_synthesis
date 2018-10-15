@@ -7,49 +7,21 @@ from multiprocessing import Pool
 from itertools import repeat
 import inspect
 import argparse
-from config import *
+import config
 
-presets = {
-    'DQN': {
-        'agent': DQN_Agent,
-        'parameters': dict(
-            h_size = 35,
-            middle_size = 128,
-            lstm_layers = 2,
-            learning_starts = 100,
-            learning_freq = 4,
-            target_update_freq = 1000, 
-            lr = 0.01,
-            gamma = 0.99,
-            batch_size = 32,
-            replay_buffer_size = 100000,
-            epsilon_decay_steps = 50000
-        )
-    },
-    'PG': {
-        #'agent': PG_Agent,
-        'parameters': dict(
-            h_size = 35,
-            middle_size = 128,
-            lstm_layers = 2,
-            learning_starts = 100,
-            learning_freq = 4,
-            target_update_freq = 1000, 
-            lr = 0.01,
-            gamma = 0.99,
-            batch_size = 32,
-            replay_buffer_size = 100000
-        )
-    }
+agents = {
+    'DQN_Agent': DQN_Agent
 }
+
+cfg = config.load("config.json")
 
 def run_experiment(preset, reward_func, episodes, root_dir):
     
     # Conduct experiment and output logs in a separate directory
-    preset = presets[preset]
+    preset = cfg["presets"][preset]
     log_dir = os.path.join(root_dir, reward_func.__name__)
     os.makedirs(log_dir)
-    agent = preset['agent'](**preset['parameters'], verbose=True, log_dir=log_dir)
+    agent = agents[preset['agent']](**preset['parameters'], verbose=True, log_dir=log_dir)
     agent.train(reward_func, episodes)
     score, episode = agent.best_performance()
     

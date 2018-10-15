@@ -1,7 +1,14 @@
 import torch
+import json
+
+def load(filename):
+	with open(filename) as f:
+		data = json.load(f)
+	return data
+
 
 # Hardware usage
-DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+DEVICE = 'cuda'
 MULTIPROCESSING = True
 
 # Learning parameters
