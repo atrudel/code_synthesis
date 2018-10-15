@@ -7,8 +7,11 @@ CFG = config.get_cfg().settings.toy_corewar
 class ToyCorewar():
     """A toy implementation of Corewar with just 4 instructions"""
     
-    def __init__(self, num_registers=CFG.NUM_REGISTERS, mem_size=(4*CFG.MAX_LENGTH)):
-        self.registers = np.zeros(num_registers, dtype=int)
+    def __init__(self, registers=None, num_registers=CFG.NUM_REGISTERS, mem_size=(4*CFG.MAX_LENGTH)):
+        if registers is not None:
+            self.registers = registers.clip(0, 255)
+        else:
+            self.registers = np.zeros(num_registers, dtype=int)
         self.memory = np.zeros(mem_size, dtype=int)
     
     @jit
