@@ -1,63 +1,123 @@
 import config
 import numpy as np
+from random import randint as randint
 from game.toyCorewar import ToyCorewar
 
 CFG = config.get_cfg()
 CWCFG = CFG.settings.toy_corewar
 
-# Specific values for all registers, without division
-def specific_register_values(cw):
-    target_values = np.array([0,10,10,20], dtype=int)
-    reward = 0
-    for reg in range(CWCFG.N_TARGETS):
-        reward -= abs(target_values[reg] - cw.registers[reg])
-    return cw.registers, target_values, reward
+
+class Reward_function(object):
+    '''targets is a numpy array of shape=(4,), dtype=int'''
+    def __init__(self, targets=None):
+        self.targets = targets if targets is not None else self.random()
+    '''cw is a Toycorewar object'''
+    def evaluate(self, cw):
+        pass
+    '''Generates a random set of target values, adapted for the reward function'''
+    def random(self):
+        pass
+    def maximum(self):
+        pass
+
+
+# Specific values for all registers
+class Specific_register_values(Reward_function):
+    def evaluate(self, cw):
+        reward = -abs(cw.registers - self.targets).sum()
+        return cw.registers, self.targets, reward
+
+    def random(self):
+        return np.random.randint(0, 256, CWCFG.N_TARGETS)
+
+    def maximum(self):
+        return 0
+
 
 # Specific values for all registers, with division
-def specific_register_values_division(cw):
-    target_values = np.array([0,10,10,20], dtype=int)
-    reward = 0
-    for reg in range(CWCFG.N_TARGETS):
-        reward -= abs((target_values[reg] - cw.registers[reg]) / (target_values[reg] + 1))
-    return cw.registers, target_values, reward
+class Specific_register_values_division(Specific_register_values):
+    def evaluate(self, cw):
+        eps = np.finfo(np.float32).eps.item()
+        reward = -abs((self.targets - cw.registers) / (self.targets + eps)).sum()
+        return cw.registers, self.targets, reward
+
+    '''The random() and maximum() methods are implemented in the parent class above'''
+
 
 # Specific value for one register
-def one_register_value(cw):
-    target = 55
-    register = 3 # Reminder: register indexes start from 1
-    target_values = np.zeros(4, dtype=int)
-    target_values[register-1] = target
-    reward = -abs(target - cw.registers[register-1])
-    return cw.registers, target_values, reward
+'''targets are expected to be negative numbers except the one register which is evaluated'''
+class One_register_value(Reward_function):
+    def evaluate(self, cw):
+        indices = np.nonzero(self.targets >= 0)[0]
+        assert len(indices) == 1, "Incorrect targets: {}. Should be all negative except one".format(self.targets)
+        reward = -abs(self.targets[indices[0]] - cw.registers[indices[0]])
+        return cw.registers, self.targets, reward
 
-# Maximize the sum of all register values
-def maximize_all_registers(cw):
-    target = np.zeros(4, dtype=int)
-    reward = cw.registers.sum()
-    return cw.registers, target, reward
+    def random(selfs):
+        targets = np.full(CWCFG.N_TARGETS, -1, dtype=int)
+        targets[randint(0, CWCFG.N_TARGETS-1)] = randint(0, 255)
+        return targets
 
-# Minimize the sum of all register values
-def minimize_all_registers(cw):
-    target = np.zeros(4, dtype=int)
-    reward = -cw.registers.sum()
-    return cw.registers, target, reward
+    def maximum(self):
+        return 0
 
-def maximize_one_register(cw):
-    register = 4
-    target = np.zeros(4, dtype=int)
-    reward = cw.registers[register-1]
-    return cw.registers, target, reward
+# Make all register values as high as possible (max being 255)
+class Maximize_all_registers(Reward_function):
+    def evaluate(self, cw):
+        reward = cw.registers.sum()
+        return cw.registers, self.targets, reward
 
-def minimize_one_register(cw):
-    register = 2
-    target = np.zeros(4, dtype=int)
-    reward = -cw.registers[register-1]
-    return cw.registers, target, reward
+    def random(self):
+        return np.full(CWCFG.N_TARGETS, -1, dtype=int)
 
-reward_functions = [specific_register_values,
-                   specific_register_values_division,
-                   one_register_value,
-                   maximize_all_registers,
-                   minimize_all_registers,
-                   maximize_one_register,
-                   minimize_one_register]
+    def maximum(self):
+        return CWCFG.N_TARGETS * 255
+
+
+# Make all register values as small as possible (min being 0)
+class Minimize_all_registers(Reward_function):
+    def evaluate(self, cw):
+        reward = -cw.registers.sum()
+        return cw.registers, self.targets, reward
+
+    def random(self):
+        return np.full(CWCFG.N_TARGETS, -1, dtype=int)
+
+    def maximum(self):
+        return 0
+
+
+class Maximize_one_register(Reward_function):
+    def evaluate(self, cw):
+        indices = np.nonzero(self.targets >= 0)[0]
+        assert len(indices) == 1, "Incorrect targets: {}. Should be all negative except one".format(targets)
+        reward = cw.registers[indices[0]]
+        return cw.registers, self.targets, reward
+
+    def random(self):
+        targets = np.full(CWCFG.N_TARGETS, -1, dtype=int)
+        targets[randint(0, CWCFG.N_TARGETS-1)] = randint(0, 255)
+        return targets
+
+    def maximum(self):
+        return 255
+
+
+class Minimize_one_register(Maximize_one_register):
+    def evaluate(self, cw):
+        state, targets, reward = super(Minimize_one_register, self).evaluate(cw)
+        return state, targets, -reward
+
+    # random() is implemented in the Maximize_one_register class
+
+    def maximum(self):
+        return 0
+
+
+reward_functions = [Specific_register_values,
+                   Specific_register_values_division,
+                   One_register_value,
+                   Maximize_all_registers,
+                   Minimize_all_registers,
+                   Maximize_one_register,
+                   Minimize_one_register]
