@@ -1,13 +1,10 @@
 {
     "settings": {
         "MULTIPROCESSING": false,
-
         "MAX_EPISODES": 50000,
-
         "ASSESS_FREQ": 20,
         "LOG_FREQ": 20,
         "SAVE_FREQ": 0,
-
         "toy_corewar": {
             "NUM_ACTIONS": 225,
             "NUM_REGISTERS": 4,
