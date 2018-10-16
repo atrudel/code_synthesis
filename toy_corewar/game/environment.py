@@ -1,12 +1,15 @@
-from config import *
+import config
 from game.toyCorewar import ToyCorewar
 from game.program_synthesis import Program, Instruction
 import numpy as np
 import torch
 import math
 
+CFG = config.get_cfg()
+CWCFG = CFG.settings.toy_corewar
+
 class Env():
-    action_space_n = NUM_ACTIONS
+    action_space_n = CWCFG.NUM_ACTIONS
     
     def __init__(self, reward_func):
         '''The reward function must take a ToyCorewar instance as an argument and return a reward'''

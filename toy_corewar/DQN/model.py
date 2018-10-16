@@ -1,7 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from config import *
+import config
+
+CFG = config.get_cfg().settings.toy_corewar
 
 torch.set_default_tensor_type('torch.FloatTensor')
 
@@ -10,8 +12,8 @@ class Dueling_DQN(nn.Module):
         super(Dueling_DQN, self).__init__()
         self.num_lstm_layers = lstm_layers
         
-        input_size = N_INSTRUCTIONS + N_VARS * NUM_REGISTERS + 1
-        s_size = N_TARGETS * 2
+        input_size = CFG.N_INSTRUCTIONS + CFG.N_VARS * CFG.NUM_REGISTERS + 1
+        s_size = CFG.N_TARGETS * 2
        
         self.lstm_p = nn.LSTM(input_size=input_size, hidden_size=h_size, num_layers=lstm_layers)
         self.fc_s1 = nn.Linear(in_features=s_size, out_features=s_size)
@@ -19,7 +21,7 @@ class Dueling_DQN(nn.Module):
         
         self.fc1 = nn.Linear(in_features=(h_size + s_size), out_features=middle_size)
 
-        self.fc_adv = nn.Linear(in_features=middle_size, out_features=NUM_ACTIONS)
+        self.fc_adv = nn.Linear(in_features=middle_size, out_features=CFG.NUM_ACTIONS)
         self.fc_val = nn.Linear(in_features=middle_size, out_features=1)
         
         self.relu = nn.ReLU()
@@ -42,8 +44,8 @@ class Dueling_DQN(nn.Module):
         
         # Split processing in 2 streams: value and advantage
         adv = self.fc_adv(x)
-        val = self.fc_val(x).expand(-1, NUM_ACTIONS)
+        val = self.fc_val(x).expand(-1, CFG.NUM_ACTIONS)
         
-        x = val + adv - adv.mean().expand(NUM_ACTIONS)
+        x = val + adv - adv.mean().expand(CFG.NUM_ACTIONS)
         
         return x

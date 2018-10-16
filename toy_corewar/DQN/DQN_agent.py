@@ -4,11 +4,13 @@ from agent import Agent
 from game.environment import Env
 import time
 import random
-from config import *
+import config
 import numpy as np
 import torch
 import torch.optim as optim
 
+CFG = config.get_cfg()
+CWCFG = CFG.settings.toy_corewar
 
 class DQN_Agent(Agent):
     def __init__(self,
@@ -36,7 +38,7 @@ class DQN_Agent(Agent):
         self.best_model.load_state_dict(self.Q.state_dict())
         
         # Save Q-learning parameters
-        self.learning_starts = learning_starts if (learning_starts > batch_size / MAX_LENGTH) else batch_size
+        self.learning_starts = learning_starts if (learning_starts > batch_size / CWCFG.MAX_LENGTH) else batch_size
         self.learning_freq = learning_freq
         self.target_update_freq = target_update_freq
         self.gamma = gamma
@@ -59,7 +61,7 @@ class DQN_Agent(Agent):
 
         if e_greedy and (episode < self.learning_starts or 
                          np.random.rand() < self.epsilon_schedule.value(episode)):
-            return np.random.randint(NUM_ACTIONS)
+            return np.random.randint(CFG.settings.toy_corewar.NUM_ACTIONS)
         else:
             return self.Q(state_to_tensors(state)).argmax(1).item()
 
@@ -77,7 +79,7 @@ class DQN_Agent(Agent):
         for episode in range(episodes):
             s = env.reset()
             
-            for t in range(MAX_LENGTH):
+            for t in range(CWCFG.MAX_LENGTH):
                 # Select action with E-greedy policy
                 a = self.act(s, episode=episode, e_greedy=True)
                 
@@ -91,20 +93,20 @@ class DQN_Agent(Agent):
                 s = s_prime
                 
                 # EXPERIENCE REPLAY (every LEARNING_FREQth time step after learning starts) 
-                if (episode > self.learning_starts and (episode * MAX_LENGTH + t) % self.learning_freq == 0):
+                if (episode > self.learning_starts and (episode * CWCFG.MAX_LENGTH + t) % self.learning_freq == 0):
                     self.experience_replay()
                 
                 if done:
                     break
             
             # Console and log outputs
-            if (episode + 1) % LOG_FREQ == 0:
+            if (episode + 1) % CFG.settings.LOG_FREQ == 0:
                 self.log(episode, reward_func, start_time)
             # Assess agent performance (and keep track of the best one)
-            elif (episode + 1) % ASSESS_FREQ == 0:
+            elif (episode + 1) % CFG.settings.ASSESS_FREQ == 0:
                 self.assess(reward_func, episode=episode)
             # Save model periodically
-            if SAVE_FREQ > 0 and (episode + 1) % SAVE_FREQ == 0:
+            if CFG.settings.SAVE_FREQ > 0 and (episode + 1) % SAVE_FREQ == 0:
                 self.save("Episode_{}".format(episode + 1))
                     
     def experience_replay(self):

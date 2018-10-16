@@ -1,11 +1,13 @@
 import numpy as np
 from numba import jit
-from config import *
+import config
+
+CFG = config.get_cfg().settings.toy_corewar
 
 class ToyCorewar():
     """A toy implementation of Corewar with just 4 instructions"""
     
-    def __init__(self, num_registers=NUM_REGISTERS, mem_size=(4*MAX_LENGTH)):
+    def __init__(self, num_registers=CFG.NUM_REGISTERS, mem_size=(4*CFG.MAX_LENGTH)):
         self.registers = np.zeros(num_registers, dtype=int)
         self.memory = np.zeros(mem_size, dtype=int)
     
@@ -28,7 +30,7 @@ class ToyCorewar():
         pc = 0
         while pc is not None:
             pc = self.execute_instruction(pc, verbose)
-    
+
     def execute_instruction(self, pc, verbose):
         """Execute the instruction located at pc, advance the pc and return it"""
         instructions = [self.no_instr, self.ld, self.st, self.add, self.sub]
@@ -84,4 +86,3 @@ class ToyCorewar():
             i += 1
             if i % 10 == 0:
                 print()
-            

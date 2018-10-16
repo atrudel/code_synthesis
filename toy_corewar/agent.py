@@ -1,11 +1,13 @@
 import os
 import inspect
 import time, datetime
-import os
-from config import *
+import config
+import torch
 from game.environment import Env
 from tensorboardX import SummaryWriter
 
+CFG = config.get_cfg()
+CWCFG = CFG.settings.toy_corewar
 
 class Agent:
     def __init__(self, verbose, log_dir):
@@ -47,7 +49,7 @@ class Agent:
     def assess(self, reward_func, episode=None, print=False, file=None):
         env = Env(reward_func)
         s = env.reset()
-        for t in range(MAX_LENGTH):
+        for t in range(CWCFG.MAX_LENGTH):
             a = self.act(s)
             s_prime, reward, done, _ = env.step(a)
             s = s_prime

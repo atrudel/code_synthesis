@@ -1,7 +1,6 @@
 {
     "settings": {
-        "DEVICE" :"cuda", 
-        "MULTIPROCESSING": true,
+        "MULTIPROCESSING": false,
 
         "MAX_EPISODES": 50000,
 

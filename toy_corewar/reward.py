@@ -1,13 +1,15 @@
-from config import *
+import config
 import numpy as np
 from game.toyCorewar import ToyCorewar
-from config import *
+
+CFG = config.get_cfg()
+CWCFG = CFG.settings.toy_corewar
 
 # Specific values for all registers, without division
 def specific_register_values(cw):
     target_values = np.array([0,10,10,20], dtype=int)
     reward = 0
-    for reg in range(N_TARGETS):
+    for reg in range(CWCFG.N_TARGETS):
         reward -= abs(target_values[reg] - cw.registers[reg])
     return cw.registers, target_values, reward
 
@@ -15,7 +17,7 @@ def specific_register_values(cw):
 def specific_register_values_division(cw):
     target_values = np.array([0,10,10,20], dtype=int)
     reward = 0
-    for reg in range(N_TARGETS):
+    for reg in range(CWCFG.N_TARGETS):
         reward -= abs((target_values[reg] - cw.registers[reg]) / (target_values[reg] + 1))
     return cw.registers, target_values, reward
 
