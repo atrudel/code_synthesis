@@ -12,13 +12,22 @@ class Reward_function(object):
     def __init__(self, targets=None):
         self.targets = targets if targets is not None else self.random()
     '''cw is a Toycorewar object'''
+
+    def __call__(self, cw):
+        return self.evaluate(cw)
+
     def evaluate(self, cw):
         pass
+
     '''Generates a random set of target values, adapted for the reward function'''
     def random(self):
         pass
+
     def maximum(self):
         pass
+
+    def __str__(self):
+        return "({}: target={})".format(self.__class__.__name__, str(self.targets))
 
 
 # Specific values for all registers

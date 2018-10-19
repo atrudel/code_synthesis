@@ -45,15 +45,13 @@ class DQN_Agent(Agent):
         self.batch_size = batch_size
         
         # Initialize Q-learning variables
-        self.trained = False
         self.loss_function = torch.nn.MSELoss()
         self.optimizer = optim.RMSprop(self.Q.parameters(), lr=lr)
         self.num_parameter_updates = 0
         self.epsilon_schedule = LinearSchedule(schedule_episodes=epsilon_decay_steps, final_p=0.1)
-        self.replay_buffer = deque(maxlen=replay_buffer_size)    
-        
-        self.verbose = verbose
-        self.log_dir = log_dir
+        self.replay_buffer = deque(maxlen=replay_buffer_size)
+        self.total_episodes = 0
+
 
     def act(self, state, episode=None, e_greedy=False):
         '''Returns an action based on a state. 
@@ -66,22 +64,18 @@ class DQN_Agent(Agent):
             return self.Q(state_to_tensors(state)).argmax(1).item()
 
 
-    def train(self, reward_func, episodes):
-        if self.trained:
-            raise Exception("This DQN Agent has already been trained. Multiple trainings not supported")
-        else:
-            self.trained = True
-            
+    def train(self, reward_func, reg_init, episodes):
         env = Env(reward_func)
         self.log_init(episodes, reward_func)
         start_time = time.time()
         
         for episode in range(episodes):
-            s = env.reset()
+            self.total_episodes += 1
+            s = env.reset(reg_init)
             
             for t in range(CWCFG.MAX_LENGTH):
                 # Select action with E-greedy policy
-                a = self.act(s, episode=episode, e_greedy=True)
+                a = self.act(s, episode=self.total_episodes, e_greedy=True)
                 
                 # Submit chosen action to the environment
                 s_prime, reward, done, _ = env.step(a)
@@ -93,7 +87,8 @@ class DQN_Agent(Agent):
                 s = s_prime
                 
                 # EXPERIENCE REPLAY (every LEARNING_FREQth time step after learning starts) 
-                if (episode > self.learning_starts and (episode * CWCFG.MAX_LENGTH + t) % self.learning_freq == 0):
+                if (self.total_episodes > self.learning_starts and 
+                    (episode * CWCFG.MAX_LENGTH + t) % self.learning_freq == 0):
                     self.experience_replay()
                 
                 if done:

@@ -52,9 +52,9 @@ class Env():
         
         return state, reward, done, None
         
-    def reset(self):
+    def reset(self, reg_init=None):
         # Reset program and return empty state
-        cw = ToyCorewar()
+        cw = ToyCorewar(reg_init=reg_init)
         self.program = Program()
         self.total_reward = 0
         self.done = False

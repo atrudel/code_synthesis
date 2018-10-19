@@ -1,6 +1,6 @@
 {
     "settings": {
-        "MULTIPROCESSING": false,
+        "MULTIPROCESSING": true,
         "MAX_EPISODES": 50000,
         "ASSESS_FREQ": 20,
         "LOG_FREQ": 20,

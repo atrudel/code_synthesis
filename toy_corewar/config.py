@@ -35,7 +35,8 @@ def retrieve(obj):
 	return obj
 
 class Container(object):
-	pass
+	def todict(self):
+		return retrieve(vars(self))
 
 class Cfg(object):
 	def __init__(self, data):
