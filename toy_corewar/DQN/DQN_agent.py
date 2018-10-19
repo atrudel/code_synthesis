@@ -95,14 +95,14 @@ class DQN_Agent(Agent):
                     break
             
             # Console and log outputs
-            if (episode + 1) % CFG.settings.LOG_FREQ == 0:
+            if (episode) % CFG.settings.LOG_FREQ == 0:
                 self.log(episode, reward_func, start_time)
             # Assess agent performance (and keep track of the best one)
-            elif (episode + 1) % CFG.settings.ASSESS_FREQ == 0:
+            elif (episode) % CFG.settings.ASSESS_FREQ == 0:
                 self.assess(reward_func, episode=episode)
             # Save model periodically
-            if CFG.settings.SAVE_FREQ > 0 and (episode + 1) % SAVE_FREQ == 0:
-                self.save("Episode_{}".format(episode + 1))
+            if CFG.settings.SAVE_FREQ > 0 and (episode) % SAVE_FREQ == 0:
+                self.save("Episode_{}".format(episode))
                     
     def experience_replay(self):
         # Sample from the replay buffer

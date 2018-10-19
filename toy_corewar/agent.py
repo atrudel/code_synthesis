@@ -68,7 +68,7 @@ class Agent:
             reward = reward_func(None) # 'None' means the Reward_function object is constructed with random target values
             for _ in range(episodes_per_target // reg_init_freq):
                 if not zero_init:
-                    reg_init = np.random.randint(0, 256, CWCFG.N_TARGETS)
+                    reg_init = np.random.randint(0, 256, CWCFG.NUM_REGISTERS)
                 self.trained_tasks.append(Task(reward, reg_init, reg_init_freq))
                 self.train(reward, reg_init, reg_init_freq)
         self.save("End_multi_training", best=False)
@@ -87,9 +87,9 @@ class Agent:
             torch.save(self.model.state_dict(), path)
 
 
-    def assess(self, reward_func, episode=None, print=False, file=None):
+    def assess(self, reward_func, reg_init=None, episode=None, print=False, file=None):
         env = Env(reward_func)
-        s = env.reset()
+        s = env.reset(reg_init)
         for t in range(CWCFG.MAX_LENGTH):
             a = self.act(s)
             s_prime, reward, done, _ = env.step(a)
@@ -108,12 +108,44 @@ class Agent:
             env.print_details(file=file)
         return score
 
-    def test_multi(self, file=None):
-        pass
+    def evaluate(self):
+        results = []
+        filename = os.path.join(self.log_dir, "Evaluation")
+        with open(filename, 'w') as f:
+            print("Evaluation over {} tasks".format(len(self.trained_tasks)), file=f)
+            print("Algorithm: {}".format(self.__class__.__name__), file=f)
+            for task in self.trained_tasks:
+                print("Task:  {}".format(task.reward_function), file=f)
+                print("Initialization: {}".format(task.reg_init), file=f)
+                results.append(self.assess(task.reward_function, task.reg_init, print=True, file=f))
+                print("\n\n", file=f)
+            mean = np.mean(results)
+            print("Mean score: {}".format(mean), file=f)
+        return mean, results
+
+    def generalize(self, Reward_func, num_tasks, reg_zero_init=False):
+        results = []
+        filename = os.path.join(self.log_dir, "Generalization")
+        with open(filename, 'w') as f:
+            print("Generalization over {} new tasks".format(num_tasks), file=f)
+            print("Algorithm: {}".format(self.__class__.__name__), file=f)
+            for n in range(num_tasks):
+                reward_function = Reward_func(None)
+                if reg_zero_init:
+                    reg_init = np.zeros(CWCFG.NUM_REGISTERS, dtype=int)
+                else:
+                    reg_init = np.random.randint(0, 256, CWCFG.NUM_REGISTERS)
+                print("Task:  {}".format(reward_function), file=f)
+                print("Initialization: {}".format(reg_init), file=f)
+                results.append(self.assess(reward_function, reg_init, print=True, file=f))
+                print("\n\n", file=f)
+            mean = np.mean(results)
+            print("Mean score: {}".format(mean), file=f)
+        return mean, results
+
 
     def best_performance(self):
         return self.best_score, self.best_episode
-
 
     def log_init(self, episodes, reward_func):
         self.log_num += 1
