@@ -13,93 +13,6 @@ import inspect
 import argparse
 import json
 
-trainings = [
-    {
-        'id': 1,
-        'algo': 'DQN',
-        'reward_func': "Specific_register_values",
-        'episodes': 500000,
-        'num_targets': 5,
-        'reg_init_freq': 0,
-        'mode': 'train',
-        'threshold': 0
-    },
-    {
-        'id': 2,
-        'algo': 'DQN',
-        'reward_func': "Specific_register_values",
-        'episodes': 500000,
-        'num_targets': 500,
-        'reg_init_freq': 0,
-        'mode': 'train',
-        'threshold': 0
-    },
-{
-        'id': 3,
-        'algo': 'DQN',
-        'reward_func': "Specific_register_values",
-        'episodes': 500000,
-        'num_targets': 500,
-        'reg_init_freq': 10,
-        'mode': 'train',
-        'threshold': 0
-    },
-    {
-        'id': 4,
-        'algo': 'DQN',
-        'reward_func': "One_register_value",
-        'episodes': 500000,
-        'num_targets': 10,
-        'reg_init_freq': 0,
-        'mode': 'train',
-        'threshold': 0
-    },
-    {
-        'id': 5,
-        'algo': 'DQN',
-        'reward_func': "One_register_value",
-        'episodes': 500000,
-        'num_targets': 500,
-        'reg_init_freq': 0,
-        'mode': 'train',
-        'threshold': 0
-    },
-{
-        'id': 6,
-        'algo': 'DQN',
-        'reward_func': "One_register_value",
-        'episodes': 500000,
-        'num_targets': 500000,
-        'reg_init_freq': 0,
-        'mode': 'train',
-        'threshold': 0
-    },
-]
-
-# Only used for debugging
-tests = [
-    {
-        'id': 1,
-        'algo': 'DQN',
-        'reward_func': "Specific_register_values",
-        'episodes': 200,
-        'num_targets': 5,
-        'reg_init_freq': 10,
-        'mode': 'train',
-        'threshold': 0
-    },
-    {
-        'id': 2,
-        'algo': 'DQN',
-        'reward_func': "One_register_value",
-        'episodes': 200,
-        'num_targets': 200,
-        'reg_init_freq': 1,
-        'mode': 'train',
-        'threshold': 0
-    },
-]
-
 def unpack(args):
     run_multi_training(**args)
 
@@ -119,11 +32,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run a multi-training series')
     parser.add_argument('name', help="name of the experiment")
     parser.add_argument('-f', '--force', help="force overwriting of the log folder", action='store_true')
-    parser.add_argument('-t', '--test', help="launch with testing parameters", action='store_true')
+    parser.add_argument('-t', '--training', help="specify custom training file", default="training.json")
     args = parser.parse_args()
 
-    if args.test:
-        trainings = tests
+    with open(args.training) as f:
+        trainings = json.load(f)
 
     os.makedirs("Experiments", exist_ok=True)
 

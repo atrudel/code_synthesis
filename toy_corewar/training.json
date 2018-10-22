@@ -1,0 +1,62 @@
+[
+    {
+        "id": 1,
+        "algo": "DQN",
+        "reward_func": "Specific_register_values",
+        "episodes": 500000,
+        "num_targets": 5,
+        "reg_init_freq": 0,
+        "mode": "train",
+        "threshold": 0
+    },
+    {
+        "id": 2,
+        "algo": "DQN",
+        "reward_func": "Specific_register_values",
+        "episodes": 500000,
+        "num_targets": 500,
+        "reg_init_freq": 0,
+        "mode": "train",
+        "threshold": 0
+    },
+    {
+        "id": 3,
+        "algo": "DQN",
+        "reward_func": "Specific_register_values",
+        "episodes": 500000,
+        "num_targets": 500,
+        "reg_init_freq": 10,
+        "mode": "train",
+        "threshold": 0
+    },
+    {
+        "id": 4,
+        "algo": "DQN",
+        "reward_func": "One_register_value",
+        "episodes": 500000,
+        "num_targets": 10,
+        "reg_init_freq": 0,
+        "mode": "train",
+        "threshold": 0
+    },
+    {
+        "id": 5,
+        "algo": "DQN",
+        "reward_func": "One_register_value",
+        "episodes": 500000,
+        "num_targets": 500,
+        "reg_init_freq": 0,
+        "mode": "train",
+        "threshold": 0
+    },
+    {
+        "id": 6,
+        "algo": "DQN",
+        "reward_func": "One_register_value",
+        "episodes": 500000,
+        "num_targets": 500000,
+        "reg_init_freq": 0,
+        "mode": "train",
+        "threshold": 0
+    }
+]
