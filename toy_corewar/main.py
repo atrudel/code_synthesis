@@ -3,30 +3,26 @@ config.load("config.json")
 cfg = config.get_cfg()
 
 import os, shutil
-from DQN.DQN_agent import DQN_Agent
 import reward
-import torch
 import multiprocessing
 from multiprocessing import Pool
-from itertools import repeat
-import inspect
 import argparse
 import json
+from DQN.DQN_agent import DQN_Agent
 
 def unpack(args):
-    run_multi_training(**args)
+    run_training(**args)
 
-def run_multi_training(id, algo, reward_func, episodes, num_targets, reg_init_freq, mode, threshold, root_dir):
+def run_training(id, algo, reward_func, episodes, root_dir):
     log_dir = os.path.join(root_dir, str(id))
     os.makedirs(log_dir)
 
     preset = getattr(cfg.presets, algo)
     agent = globals()[preset.agent](**preset.parameters.todict(), verbose=True, log_dir=log_dir)
-    reward_func = getattr(reward, reward_func)
-    agent.multi_train(reward_func, num_targets, reg_init_freq, episodes)
+    Reward_func = getattr(reward, reward_func)
+    agent.train(Reward_func, episodes)
+    agent.save("best", best=True)
 
-    agent.evaluate()
-    agent.generalize(reward_func, 10, reg_zero_init=(True if reg_init_freq == 0 else False))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run a multi-training series')

@@ -50,7 +50,7 @@ class DQN_Agent(Agent):
         self.num_parameter_updates = 0
         self.epsilon_schedule = LinearSchedule(schedule_episodes=epsilon_decay_steps, final_p=0.1)
         self.replay_buffer = deque(maxlen=replay_buffer_size)
-        self.total_episodes = 0
+
 
 
     def act(self, state, episode=None, e_greedy=False):
@@ -64,13 +64,16 @@ class DQN_Agent(Agent):
             return self.Q(state_to_tensors(state)).argmax(1).item()
 
 
-    def train(self, reward_func, reg_init, episodes):
-        env = Env(reward_func)
-        self.log_init(episodes, reward_func)
-        start_time = time.time()
-        
+    def train(self, Reward_func, episodes, reg_init=None):
+        if self.verbose:
+            print("Starting training [algo = {}, reward = {}] for {} episodes...".format(
+                    self.__class__.__name__, Reward_func.__class__.__name__, episodes))
+
+        self.start_time = time.time()
         for episode in range(episodes):
             self.total_episodes += 1
+            reward_func = Reward_func(None)
+            env = Env(reward_func)
             s = env.reset(reg_init)
             
             for t in range(CWCFG.MAX_LENGTH):
@@ -93,16 +96,14 @@ class DQN_Agent(Agent):
                 
                 if done:
                     break
-            
-            # Console and log outputs
-            if (episode) % CFG.settings.LOG_FREQ == 0:
-                self.log(episode, reward_func, start_time)
+
             # Assess agent performance (and keep track of the best one)
-            elif (episode) % CFG.settings.ASSESS_FREQ == 0:
-                self.assess(reward_func, episode=episode)
-            # Save model periodically
-            if CFG.settings.SAVE_FREQ > 0 and (episode) % SAVE_FREQ == 0:
-                self.save("Episode_{}".format(episode))
+            if (episode) % CFG.settings.ASSESS_FREQ == 0:
+                self.generalize(Reward_func, 100, log=(episode % CFG.settings.LOG_FREQ))
+            # Save best model periodically
+            if CFG.settings.SAVE_FREQ > 0 and (episode) % CFG.settings.SAVE_FREQ == 0:
+                self.save("best", best=True)
+                # self.save("Episode_{}".format(episode))
                     
     def experience_replay(self):
         # Sample from the replay buffer

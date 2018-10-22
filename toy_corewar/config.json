@@ -1,9 +1,9 @@
 {
     "settings": {
-        "MAX_EPISODES": 50000,
-        "ASSESS_FREQ": 5,
-        "LOG_FREQ": 5,
-        "SAVE_FREQ": 0,
+        "MAX_EPISODES": 500000,
+        "ASSESS_FREQ": 100,
+        "LOG_FREQ": 1000,
+        "SAVE_FREQ": 1000,
         "toy_corewar": {
             "NUM_ACTIONS": 225,
             "NUM_REGISTERS": 4,
