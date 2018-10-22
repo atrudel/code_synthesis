@@ -9,6 +9,13 @@ CFG = config.get_cfg()
 CWCFG = CFG.settings.toy_corewar
 
 class Env():
+    opcode_comb = [
+                    CWCFG.NUM_REGISTERS * CWCFG.N_VALS,
+                    CWCFG.NUM_REGISTERS * CWCFG.N_VALS + CWCFG.NUM_REGISTERS ** 2,
+                    CWCFG.NUM_REGISTERS * CWCFG.N_VALS + CWCFG.NUM_REGISTERS ** 2 + CWCFG.NUM_REGISTERS ** 3,
+                    CWCFG.NUM_REGISTERS * CWCFG.N_VALS + CWCFG.NUM_REGISTERS ** 2 + 2 * (CWCFG.NUM_REGISTERS ** 3)
+                    ]
+
     action_space_n = CWCFG.NUM_ACTIONS
     
     def __init__(self, reward_func):
@@ -68,34 +75,35 @@ class Env():
         return program_state, memory_state
         
     def interpret_action(action):
+        regs = CWCFG.NUM_REGISTERS
         # ld
-        if action < 80:
+        if action < Env.opcode_comb[0]:
             opcode = 1
-            div, reminder = divmod(action, 20)
+            div, reminder = divmod(action, CWCFG.N_VALS)
             arg1 = reminder
             arg2 = div + 1
             arg3 = None
         # st
-        elif action < 96:
+        elif action < Env.opcode_comb[1]:
             opcode = 2
-            div, reminder = divmod(action - 80, 4)
+            div, reminder = divmod(action - Env.opcode_comb[0], regs)
             arg1 = reminder + 1
             arg2 = div + 1
             arg3 = None
         # add
-        elif action < 160:
+        elif action < Env.opcode_comb[2]:
             opcode = 3
-            div, reminder = divmod(action - 96, 4)
+            div, reminder = divmod(action - Env.opcode_comb[1], regs)
             arg1 = reminder + 1
-            div, reminder = divmod(div, 4)
+            div, reminder = divmod(div, regs)
             arg2 = reminder + 1
             arg3 = div + 1
         # sub
-        elif action < 224:
+        elif action < Env.opcode_comb[3]:
             opcode = 4
-            div, reminder = divmod(action - 160, 4)
+            div, reminder = divmod(action - Env.opcode_comb[2], regs)
             arg1 = reminder + 1
-            div, reminder = divmod(div, 4)
+            div, reminder = divmod(div, regs)
             arg2 = reminder + 1
             arg3 = div + 1
         # end (no instruction)
