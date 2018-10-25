@@ -13,14 +13,14 @@ from DQN.DQN_agent import DQN_Agent
 def unpack(args):
     run_training(**args)
 
-def run_training(id, algo, reward_func, episodes, root_dir):
+def run_training(id, algo, episodes, reward_func, reward_settings, targets, reg_init, root_dir):
     log_dir = os.path.join(root_dir, str(id))
     os.makedirs(log_dir)
 
     preset = getattr(cfg.presets, algo)
     agent = globals()[preset.agent](**preset.parameters.todict(), verbose=True, log_dir=log_dir)
     Reward_func = getattr(reward, reward_func)
-    agent.train(Reward_func, episodes)
+    agent.train(Reward_func, reward_settings, episodes, targets, reg_init)
     agent.save("best", best=True)
 
 

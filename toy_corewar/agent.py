@@ -60,23 +60,49 @@ class Agent:
             s = s_prime
             if done:
                 break
-        score = env.total_reward
-        
-        # If an episode number was specified, the score can break the agent's record
-        if score > self.best_score and episode is not None:
-            self.best_score = score
-            self.best_episode = episode + 1
-            self.best_model.load_state_dict(self.model.state_dict())
+        performance = env.performance
+        total_reward = env.total_reward
         
         if print:
             env.print_details(file=file)
-        return score
+        return performance, total_reward
+
+
+    def evaluate(self, log=False):
+        performances = []
+        total_rewards = []
+        if log:
+            filename = os.path.join(self.log_dir, "{:07}_Evaluation".format(self.total_episodes))
+        else:
+            filename = os.devnull
+        with open(filename, 'w') as f:
+            print("Evaluation over {} tasks".format(len(self.tasks)), file=f)
+            print("Algorithm: {}".format(self.__class__.__name__), file=f)
+            current_time = datetime.timedelta(seconds=(time.time() - self.start_time))
+            print("Time: {}".format(str(current_time)), file=f)
+
+            for reward_func, reg_init in self.tasks:
+                print("Task:  {}".format(reward_func), file=f)
+                print("Initialization: {}".format(reg_init), file=f)
+                performance, total_reward = self.assess(reward_func, reg_init, print=True, file=f)
+                performances.append(performance)
+                total_rewards.append(total_reward)
+                print("\n\n", file=f)
+
+            mean_perf = np.mean(performances)
+            mean_reward = np.mean(total_rewards)
+            print("Mean performance: {}".format(mean_perf), file=f)
+            print("Mean reward: {}".format(mean_reward), file=f)
+
+        return mean_perf, mean_reward
+
 
     def generalize(self, Reward_func, num_tasks, reg_zero_init=True, log=False):
         np.random.seed(0)
-        results = []
+        performances = []
+        total_rewards = []
         if log:
-            filename = os.path.join(self.log_dir, "{}_Generalization".format(self.total_episodes))
+            filename = os.path.join(self.log_dir, "{:07}_Generalization".format(self.total_episodes))
         else:
             filename = os.devnull
         with open(filename, 'w') as f:
@@ -90,24 +116,29 @@ class Agent:
                     reg_init = np.zeros(CWCFG.NUM_REGISTERS, dtype=int)
                 else:
                     reg_init = np.random.randint(0, 256, CWCFG.NUM_REGISTERS)
-                print("Task:  {}".format(reward_function), file=f)
+                print("Task {}:  {}".format(n + 1, reward_function), file=f)
                 print("Initialization: {}".format(reg_init), file=f)
-                results.append(self.assess(reward_function, reg_init, print=True, file=f))
+                performance, total_reward = self.assess(reward_function, reg_init, print=True, file=f)
+                performances.append(performance)
+                total_rewards.append(total_reward)
                 print("\n\n", file=f)
-            mean = np.mean(results)
-            print("Mean score: {}".format(mean), file=f)
+            mean_perf = np.mean(performances)
+            mean_reward = np.mean(total_rewards)
+            print("Mean performance: {}".format(mean_perf), file=f)
+            print("Mean reward: {}".format(mean_reward), file=f)
         np.random.seed()
 
-        if mean > self.best_score:
-            self.best_score = mean
+        if mean_perf > self.best_score:
+            self.best_score = mean_perf
             self.best_episode = self.total_episodes
             self.best_model.load_state_dict(self.model.state_dict())
 
         if self.verbose:
             print("Currently at episode {}".format(self.total_episodes))
-        self.writer.add_scalars(self.log_dir, {'mean_rewards': mean}, self.total_episodes)
-        return mean, results
+        self.writer.add_scalars(self.log_dir, {'Mean performance': mean_perf}, self.total_episodes)
+        self.writer.add_scalars(self.log_dir, {'Mean total reward': mean_reward}, self.total_episodes)
 
+        return mean_perf, mean_reward
 
     def best_performance(self):
         return self.best_score, self.best_episode
@@ -116,20 +147,21 @@ class Agent:
         if self.writer is not None:
             self.writer.close()
 
-    # def evaluate(self):
-    #     results = []
-    #     filename = os.path.join(self.log_dir, "Evaluation")
-    #     with open(filename, 'w') as f:
-    #         print("Evaluation over {} tasks".format(len(self.tasks)), file=f)
-    #         print("Algorithm: {}".format(self.__class__.__name__), file=f)
-    #         for task in self.tasks:
-    #             print("Task:  {}".format(task.reward_function), file=f)
-    #             print("Initialization: {}".format(task.reg_init), file=f)
-    #             results.append(self.assess(task.reward_function, task.reg_init, print=True, file=f))
-    #             print("\n\n", file=f)
-    #         mean = np.mean(results)
-    #         print("Mean score: {}".format(mean), file=f)
-    #     return mean, results
+    # def update_reward_function(self, Reward_func, targets, reward_settings, episode, episodes):
+    #     if targets is None:
+    #         target = None
+    #         change_frequency = 1
+    #     elif isinstance(targets, int):
+    #         change_frequency = episodes // targets
+    #         target = None
+    #     elif isinstance(targets, list):
+    #         change_frequency = episodes // len(targets)
+    #         index =
+    #         target = np.array(targets[index], dtype=int)
+    #     else:
+    #         raise ValueError("Unrecognized data type for 'targets': {}".format(targets))
+    #     if episode % (change_frequency) == 0:
+    #         self.reward_func = Reward_func(target, reward_settings)
 
     # def log_init(self, episodes, reward_func):
     #     self.log_num += 1

@@ -8,6 +8,7 @@ import config
 import numpy as np
 import torch
 import torch.optim as optim
+from task_manager import Task_Manager
 
 CFG = config.get_cfg()
 CWCFG = CFG.settings.toy_corewar
@@ -64,15 +65,17 @@ class DQN_Agent(Agent):
             return self.Q(state_to_tensors(state)).argmax(1).item()
 
 
-    def train(self, Reward_func, episodes, reg_init=None):
+    def train(self, Reward_func, reward_settings, episodes, targets=None, reg_init=None):
         if self.verbose:
             print("Starting training [algo = {}, reward = {}] for {} episodes...".format(
                     self.__class__.__name__, Reward_func.__class__.__name__, episodes))
 
+        self.tasks = Task_Manager(Reward_func, reward_settings, targets, reg_init, episodes)
+
         self.start_time = time.time()
         for episode in range(episodes):
             self.total_episodes += 1
-            reward_func = Reward_func(None)
+            reward_func, reg_init = self.tasks.get_current(episode)
             env = Env(reward_func)
             s = env.reset(reg_init)
             
@@ -100,6 +103,8 @@ class DQN_Agent(Agent):
             # Assess agent performance (and keep track of the best one)
             if (episode) % CFG.settings.ASSESS_FREQ == 0:
                 self.generalize(Reward_func, 100, log=(episode % CFG.settings.LOG_FREQ))
+                if targets is not None:
+                    self.evaluate(log=(episode % CFG.settings.LOG_FREQ))
             # Save best model periodically
             if CFG.settings.SAVE_FREQ > 0 and (episode) % CFG.settings.SAVE_FREQ == 0:
                 self.save("best", best=True)

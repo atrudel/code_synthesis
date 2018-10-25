@@ -35,7 +35,10 @@ class Instruction():
     def to_byte_sequence(self):
         arg3 = self.arg3 if self.arg3 is not None else 0
         return np.array([self.opcode, self.arg1, self.arg2, arg3], dtype=int)
-    
+
+    def to_tuple(self):
+        return self.opcode, self.arg1, self.arg2, self.arg3
+
     def padding_embedding():
         return np.zeros(CWCFG.N_INSTRUCTIONS + CWCFG.N_VARS * CWCFG.NUM_REGISTERS + 1)
     
@@ -78,4 +81,4 @@ class Program():
     
     def __iter__(self):
         for i in range(len(self.instructions)):
-            yield Program(self.instructions[:i+1])
+            yield Program(self.instructions[i])

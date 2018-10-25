@@ -1,13 +1,14 @@
 {
     "settings": {
-        "MAX_EPISODES": 500000,
-        "ASSESS_FREQ": 100,
+        "ASSESS_FREQ": 200,
         "LOG_FREQ": 1000,
         "SAVE_FREQ": 1000,
+        "STATUS_QUO_PENALTY": -50,
+        "LENGTH_PENALTY": 0,
         "toy_corewar": {
             "NUM_ACTIONS": 225,
             "NUM_REGISTERS": 4,
-            "MAX_LENGTH": 5,
+            "MAX_LENGTH": 8,
             "N_INSTRUCTIONS": 4,
             "N_VARS": 3,
             "N_VALS": 20,

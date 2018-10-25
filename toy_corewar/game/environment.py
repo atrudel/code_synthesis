@@ -19,7 +19,7 @@ class Env():
     action_space_n = CWCFG.NUM_ACTIONS
     
     def __init__(self, reward_func):
-        '''The reward function must take a ToyCorewar instance as an argument and return a reward'''
+        '''reward_func is an instantiated Reward_function object'''
         self.reward_func = reward_func
         self.best_score = -math.inf
     
@@ -33,44 +33,46 @@ class Env():
         
         # Handle the no-action case
         if opcode is None:
-            done = True
+            self.done = True
+            reward = 0
         else:
             # Add instruction to the program
-            done = self.program.add_instruction(Instruction(opcode, arg1, arg2, arg3))
-        
-        # Load the new program in a new toycorewar and run it
-        cw = ToyCorewar()
-        cw.load_player(self.program.to_byte_sequence())
-        cw.run()
-        
-        # Create and format the state
-        state = self.build_state(cw)
-        
-        # Calculate reward
-        _,_, reward = self.reward_func(cw) #if opcode is not None else (None, None, 0)
-        self.done = done
-        
-        # Reward is only given on the final state
-        if self.done:
+            self.done = self.program.add_instruction(Instruction(opcode, arg1, arg2, arg3))
+            cw = ToyCorewar()
+            cw.load_player(self.program.to_byte_sequence())
+            cw.run()
+            self.register_states.append(cw.reg_state())
+            reward = self.reward_func(self)
+            self.rewards.append(reward)
             self.total_reward += reward
-            self.best_score = max(self.total_reward, self.best_score)
-        else:
-            reward = 0
-        
-        return state, reward, done, None
-        
+
+        # Record best
+        if self.done:
+            self.performance = self.reward_func.performance(self)
+            self.best_score = max(self.performance, self.best_score)
+
+        # Create and format the state
+        state = self.build_state()
+
+        return state, reward, self.done, None
+
+
     def reset(self, reg_init=None):
         # Reset program and return empty state
-        cw = ToyCorewar(reg_init=reg_init)
+        self.reg_init = reg_init if reg_init is not None else np.zeros(CWCFG.NUM_REGISTERS, dtype=int)
         self.program = Program()
+        self.rewards = []
         self.total_reward = 0
+        self.performance = None
+        self.register_states = [self.reg_init]
         self.done = False
-        return self.build_state(cw)
+        return self.build_state()
     
-    def build_state(self, cw):
+    def build_state(self):
         # Take self.program and self.cw to build a representation of the state
         program_state = self.program.to_embedding_sequence()
-        current_mem, target_mem, _ = self.reward_func(cw)
+        current_mem = self.register_states[-1]
+        target_mem = self.reward_func.targets
         memory_state = np.array([current_mem, target_mem])
         return program_state, memory_state
         
@@ -111,18 +113,16 @@ class Env():
             return (None, None, None, None)
         return opcode, arg1, arg2, arg3
 
+
     def print_details(self, file=None):
-        for i, subprogram in enumerate(self.program):
-            cw = ToyCorewar()
-            cw.load_player(subprogram.to_byte_sequence())
-            cw.run()
-            _, _, reward = self.reward_func(cw)
-            subprogram[i].print(file=file, end=' ')
+        for i, instruction in enumerate(self.program):
+            self.program[i].print(file=file, end=' ')
             details = "\t[ "
-            for reg in range(len(cw.registers)):
-                details += str(cw.registers[reg]).rjust(3) + " "
+            for reg in range(CWCFG.NUM_REGISTERS):
+                details += str(self.register_states[i + 1][reg]).rjust(3) + " "
             details += "]  "
-            details += str(reward).rjust(4)
+            details += str(self.rewards[i]).rjust(4)
             print(details, file=file)
         print("-" * 37, file=file)
         print("Total reward: {}".format(self.total_reward).rjust(37), file=file)
+        print("Performance: {}".format(self.performance).rjust(37), file=file)

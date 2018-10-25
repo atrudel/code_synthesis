@@ -77,7 +77,10 @@ class ToyCorewar():
         if verbose > 0:
             print("Executing sub", arg1, arg2, arg3)
         self.registers[arg3-1] = (self.registers[arg1-1] - self.registers[arg2-1]) % 256
-    
+
+    def reg_state(self):
+        return self.registers.copy()
+
     def print_state(self):
         print("Registers:")
         for reg in self.registers:
