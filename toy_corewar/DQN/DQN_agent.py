@@ -26,6 +26,7 @@ class DQN_Agent(Agent):
                  batch_size,
                  replay_buffer_size,
                  epsilon_decay_steps,
+                 final_epsilon,
                  verbose=False, log_dir=None):
         
         Agent.__init__(self, verbose, log_dir)
@@ -49,7 +50,8 @@ class DQN_Agent(Agent):
         self.loss_function = torch.nn.MSELoss()
         self.optimizer = optim.RMSprop(self.Q.parameters(), lr=lr)
         self.num_parameter_updates = 0
-        self.epsilon_schedule = LinearSchedule(schedule_episodes=epsilon_decay_steps, final_p=0.1)
+        self.epsilon_decay_steps = epsilon_decay_steps
+        self.final_epsilon = final_epsilon
         self.replay_buffer = deque(maxlen=replay_buffer_size)
 
 
@@ -71,7 +73,7 @@ class DQN_Agent(Agent):
                     self.__class__.__name__, Reward_func.__class__.__name__, episodes))
 
         self.tasks = Task_Manager(Reward_func, reward_settings, targets, reg_inits, episodes)
-
+        self.epsilon_schedule = LinearSchedule(self.epsilon_decay_steps, episodes, self.final_epsilon)
         self.start_time = time.time()
         for episode in range(episodes):
             self.total_episodes += 1

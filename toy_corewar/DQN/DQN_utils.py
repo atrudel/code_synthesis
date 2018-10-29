@@ -7,7 +7,7 @@ Transition = namedtuple('Transition',
                         ('state', 'action', 'reward', 'next_state', 'done'))
 
 class LinearSchedule(object):
-    def __init__(self, schedule_episodes, final_p, initial_p=1.0):
+    def __init__(self, schedule_episodes, total_episodes, final_p, initial_p=1.0):
         """Linear interpolation between initial_p and final_p over
         schedule_episodes. After this many episodes pass final_p is
         returned.
@@ -21,12 +21,14 @@ class LinearSchedule(object):
         final_p: float
             final output value
         """
-        self.schedule_episodes = schedule_episodes
+        if isinstance(schedule_episodes, float):
+            self.schedule_episodes = int(schedule_episodes * total_episodes)
+        else:
+            self.schedule_episodes = schedule_episodes
         self.final_p            = final_p
         self.initial_p          = initial_p
 
     def value(self, t):
-        """See Schedule.value"""
         fraction  = min(float(t) / self.schedule_episodes, 1.0)
         return self.initial_p + fraction * (self.final_p - self.initial_p)
 
