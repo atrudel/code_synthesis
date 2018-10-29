@@ -18,7 +18,6 @@ class Agent:
         self.best_episode = 0
         self.verbose = verbose
         self.log_dir = log_dir
-        self.log_num = 0
         self.writer = SummaryWriter() if log_dir else None
         self.model = None
         self.best_model = None
@@ -97,7 +96,7 @@ class Agent:
         return mean_perf, mean_reward
 
 
-    def generalize(self, Reward_func, num_tasks, reg_zero_init=True, log=False):
+    def generalize(self, Reward_func, num_tasks, reward_settings=None, reg_zero_init=True, log=False):
         np.random.seed(0)
         performances = []
         total_rewards = []
@@ -111,7 +110,7 @@ class Agent:
             current_time = datetime.timedelta(seconds=(time.time() - self.start_time))
             print("Time: {}".format(str(current_time)), file=f)
             for n in range(num_tasks):
-                reward_function = Reward_func(None)
+                reward_function = Reward_func(None, reward_settings)
                 if reg_zero_init:
                     reg_init = np.zeros(CWCFG.NUM_REGISTERS, dtype=int)
                 else:
