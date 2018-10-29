@@ -139,6 +139,8 @@ class DQN_Agent(Agent):
         loss.backward()
         self.optimizer.step()
         self.num_parameter_updates += 1
+        if self.writer is not None:
+            self.writer.add_scalars(self.log_dir, {self.loss_function.__class__.__name__: loss}, self.total_episodes)
 
         # Update target DQN every once in a while
         if self.num_parameter_updates % self.target_update_freq == 0:
