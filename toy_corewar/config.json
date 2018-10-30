@@ -8,7 +8,7 @@
         "toy_corewar": {
             "NUM_ACTIONS": 225,
             "NUM_REGISTERS": 4,
-            "MAX_LENGTH": 8,
+            "MAX_LENGTH": 5,
             "N_INSTRUCTIONS": 4,
             "N_VARS": 3,
             "N_VALS": 20,

@@ -78,6 +78,9 @@ class Program():
     
     def __getitem__(self, index):
         return self.instructions[index]
+
+    def __len__(self):
+        return len(self.instructions)
     
     def __iter__(self):
         for i in range(len(self.instructions)):

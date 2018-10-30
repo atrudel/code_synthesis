@@ -34,7 +34,10 @@ class Env():
         # Handle the no-action case
         if opcode is None:
             self.done = True
-            reward = 0
+            if len(self.program) == 0:
+                self.register_states.append(self.register_states[0])
+            reward = self.reward_func(self)
+
         else:
             # Add instruction to the program
             self.done = self.program.add_instruction(Instruction(opcode, arg1, arg2, arg3))

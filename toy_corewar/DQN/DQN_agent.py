@@ -76,7 +76,6 @@ class DQN_Agent(Agent):
         self.epsilon_schedule = LinearSchedule(self.epsilon_decay_steps, episodes, self.final_epsilon)
         self.start_time = time.time()
         for episode in range(episodes):
-            self.total_episodes += 1
             reward_func, reg_init = self.tasks.get_current(episode)
             env = Env(reward_func)
             s = env.reset(reg_init)
@@ -104,13 +103,16 @@ class DQN_Agent(Agent):
 
             # Assess agent performance (and keep track of the best one)
             if (episode) % CFG.settings.ASSESS_FREQ == 0:
-                self.generalize(Reward_func, 100, reward_settings, log=(episode % CFG.settings.LOG_FREQ))
+                self.generalize(Reward_func, 100, reward_settings, log=(episode % CFG.settings.LOG_FREQ == 0))
                 if targets is not None:
-                    self.evaluate(log=(episode % CFG.settings.LOG_FREQ))
+                    self.evaluate(log=(episode % CFG.settings.LOG_FREQ == 0))
             # Save best model periodically
             if CFG.settings.SAVE_FREQ > 0 and (episode) % CFG.settings.SAVE_FREQ == 0:
                 self.save("best", best=True)
                 # self.save("Episode_{}".format(episode))
+
+            self.total_episodes += 1
+
                     
     def experience_replay(self):
         # Sample from the replay buffer

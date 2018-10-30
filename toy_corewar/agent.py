@@ -93,6 +93,17 @@ class Agent:
             print("Mean performance: {}".format(mean_perf), file=f)
             print("Mean reward: {}".format(mean_reward), file=f)
 
+        if self.verbose:
+            print("Currently at episode {}".format(self.total_episodes))
+        if log:
+            self.writer.add_scalars(self.log_dir, {'Mean performance': mean_perf}, self.total_episodes)
+            self.writer.add_scalars(self.log_dir, {'Mean total reward': mean_reward}, self.total_episodes)
+
+        if mean_perf > self.best_score:
+            self.best_score = mean_perf
+            self.best_episode = self.total_episodes
+            self.best_model.load_state_dict(self.model.state_dict())
+
         return mean_perf, mean_reward
 
 
@@ -131,11 +142,6 @@ class Agent:
             self.best_score = mean_perf
             self.best_episode = self.total_episodes
             self.best_model.load_state_dict(self.model.state_dict())
-
-        if self.verbose:
-            print("Currently at episode {}".format(self.total_episodes))
-        self.writer.add_scalars(self.log_dir, {'Mean performance': mean_perf}, self.total_episodes)
-        self.writer.add_scalars(self.log_dir, {'Mean total reward': mean_reward}, self.total_episodes)
 
         return mean_perf, mean_reward
 
