@@ -36,6 +36,7 @@ class Specific_register_values(Reward_function):
     def __init__ (self, targets=None, settings=None):
         super(Specific_register_values, self).__init__(targets)
 
+        # Make it compatible to non-defined settings (None)
         if settings['circular']:
             self.distance = self.circular_distance
         else:

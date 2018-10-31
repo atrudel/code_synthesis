@@ -20,7 +20,7 @@ class Instruction():
         var_embedding = np.zeros((CWCFG.N_VARS, CWCFG.NUM_REGISTERS))
         # value encoding: direct scalar value
         val_embedding = np.zeros(1)
-        
+
         # handle the special case of ld, which uses the value embedding
         if self.opcode == 1:
             var_embedding[1][self.arg2-1] = 1
@@ -33,8 +33,10 @@ class Instruction():
         return np.concatenate((instr_embedding, var_embedding.reshape(-1), val_embedding))
         
     def to_byte_sequence(self):
+        arg1 = self.arg1 if self.arg1 is not None else 0
+        arg2 = self.arg2 if self.arg2 is not None else 0
         arg3 = self.arg3 if self.arg3 is not None else 0
-        return np.array([self.opcode, self.arg1, self.arg2, arg3], dtype=int)
+        return np.array([self.opcode, arg1, arg2, arg3], dtype=int)
 
     def to_tuple(self):
         return self.opcode, self.arg1, self.arg2, self.arg3
@@ -43,9 +45,9 @@ class Instruction():
         return np.zeros(CWCFG.N_INSTRUCTIONS + CWCFG.N_VARS * CWCFG.NUM_REGISTERS + 1)
     
     def print(self, file=None, end=None):
-        labels = ['ld', 'st', 'add', 'sub']
-        print(labels[self.opcode-1].ljust(3), file=file, end=' ')
-        print("{} {} {}".format(str(self.arg1).ljust(2), str(self.arg2).ljust(2), str(self.arg3).ljust(4)),
+        labels = ['STOP', 'ld', 'st', 'add', 'sub']
+        print(labels[self.opcode].ljust(4), file=file, end=' ')
+        print("{} {} {}".format(str(self.arg1).ljust(4), str(self.arg2).ljust(4), str(self.arg3).ljust(4)),
              file=file, end=end)
         
 

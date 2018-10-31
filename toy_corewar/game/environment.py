@@ -29,25 +29,25 @@ class Env():
         assert not self.done, "Can't add an action to a finished episode. Call Env.reset()"
         
         # Convert action to a program instruction
-        opcode, arg1, arg2, arg3 = Env.interpret_action(action) if isinstance(action, int) else action
+        instruction = Env.interpret_action(action) if isinstance(action, int) else action
         
-        # Handle the no-action case
-        if opcode is None:
-            self.done = True
-            if len(self.program) == 0:
-                self.register_states.append(self.register_states[0])
-            reward = self.reward_func(self)
+        # # Handle the no-action case
+        # if opcode is None:
+        #     self.done = True
+        #     if len(self.program) == 0:
+        #         self.register_states.append(self.register_states[0])
+        #     reward = self.reward_func(self)
 
-        else:
-            # Add instruction to the program
-            self.done = self.program.add_instruction(Instruction(opcode, arg1, arg2, arg3))
-            cw = ToyCorewar()
-            cw.load_player(self.program.to_byte_sequence())
-            cw.run()
-            self.register_states.append(cw.reg_state())
-            reward = self.reward_func(self)
-            self.rewards.append(reward)
-            self.total_reward += reward
+        # else:
+        # Add instruction to the program
+        self.done = self.program.add_instruction(instruction)
+        cw = ToyCorewar()
+        cw.load_player(self.program.to_byte_sequence())
+        cw.run()
+        self.register_states.append(cw.reg_state())
+        reward = self.reward_func(self)
+        self.rewards.append(reward)
+        self.total_reward += reward
 
         # Record best
         if self.done:
@@ -114,7 +114,7 @@ class Env():
         # end (no instruction)
         else:
             return (None, None, None, None)
-        return opcode, arg1, arg2, arg3
+        return Instruction(opcode, arg1, arg2, arg3)
 
 
     def print_details(self, file=None):
