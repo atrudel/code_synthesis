@@ -103,9 +103,10 @@ class DQN_Agent(Agent):
 
             # Assess agent performance (and keep track of the best one)
             if (episode) % CFG.settings.ASSESS_FREQ == 0:
-                self.generalize(Reward_func, 100, reward_settings, log=(episode % CFG.settings.LOG_FREQ == 0))
                 if targets is not None:
                     self.evaluate(log=(episode % CFG.settings.LOG_FREQ == 0))
+                else:
+                    self.generalize(Reward_func, 100, reward_settings, log=(episode % CFG.settings.LOG_FREQ == 0))
             # Save best model periodically
             if CFG.settings.SAVE_FREQ > 0 and (episode) % CFG.settings.SAVE_FREQ == 0:
                 self.save("best", best=True)

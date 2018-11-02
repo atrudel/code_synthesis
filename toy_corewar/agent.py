@@ -4,13 +4,11 @@ import config
 import torch
 from game.environment import Env
 from tensorboardX import SummaryWriter
-from collections import namedtuple
+from collections import deque
 import numpy as np
 
 CFG = config.get_cfg()
 CWCFG = CFG.settings.toy_corewar
-
-Task = namedtuple('Task', ('reward_function', 'reg_init', 'total_episodes', 'best_score'))
 
 class Agent:
     def __init__(self, verbose, log_dir):
@@ -22,6 +20,7 @@ class Agent:
         self.model = None
         self.best_model = None
         self.total_episodes = 0
+        self.performances = deque(maxlen=CFG.settings.PERF_MRY)
     
     ## Methods that need to be implemented in the child classes
     
@@ -59,7 +58,7 @@ class Agent:
             s = s_prime
             if done:
                 break
-        performance = env.performance
+        performance = reward_func.performance(env)
         total_reward = env.total_reward
         
         if print:
@@ -70,7 +69,7 @@ class Agent:
     def evaluate(self, log=False):
         performances = []
         total_rewards = []
-        if log:
+        if log and self.log_dir:
             filename = os.path.join(self.log_dir, "{:07}_Evaluation".format(self.total_episodes))
         else:
             filename = os.devnull
@@ -95,7 +94,7 @@ class Agent:
 
         if self.verbose:
             print("Currently at episode {}".format(self.total_episodes))
-        if log:
+        if log and self.writer is not None:
             self.writer.add_scalars(self.log_dir, {'Mean performance': mean_perf}, self.total_episodes)
             self.writer.add_scalars(self.log_dir, {'Mean total reward': mean_reward}, self.total_episodes)
 
@@ -103,7 +102,7 @@ class Agent:
             self.best_score = mean_perf
             self.best_episode = self.total_episodes
             self.best_model.load_state_dict(self.model.state_dict())
-
+        self.performances.append(mean_perf)
         return mean_perf, mean_reward
 
 
@@ -111,7 +110,7 @@ class Agent:
         np.random.seed(0)
         performances = []
         total_rewards = []
-        if log:
+        if log and log_dir:
             filename = os.path.join(self.log_dir, "{:07}_Generalization".format(self.total_episodes))
         else:
             filename = os.devnull
@@ -138,103 +137,28 @@ class Agent:
             print("Mean reward: {}".format(mean_reward), file=f)
         np.random.seed()
 
+        if self.verbose:
+            print("Currently at episode {}".format(self.total_episodes))
+        if log and self.writer is not None:
+            self.writer.add_scalars(self.log_dir, {'Mean performance': mean_perf}, self.total_episodes)
+            self.writer.add_scalars(self.log_dir, {'Mean total reward': mean_reward}, self.total_episodes)
+
         if mean_perf > self.best_score:
             self.best_score = mean_perf
             self.best_episode = self.total_episodes
             self.best_model.load_state_dict(self.model.state_dict())
-
+        self.performances.append(mean_perf)
         return mean_perf, mean_reward
 
     def best_performance(self):
         return self.best_score, self.best_episode
 
+    def global_performance(self):
+        return np.mean(self.performances)
+
+    def final_performance(self):
+        return self.performances[-1]
+
     def __del__(self):
         if self.writer is not None:
             self.writer.close()
-
-    # def update_reward_function(self, Reward_func, targets, reward_settings, episode, episodes):
-    #     if targets is None:
-    #         target = None
-    #         change_frequency = 1
-    #     elif isinstance(targets, int):
-    #         change_frequency = episodes // targets
-    #         target = None
-    #     elif isinstance(targets, list):
-    #         change_frequency = episodes // len(targets)
-    #         index =
-    #         target = np.array(targets[index], dtype=int)
-    #     else:
-    #         raise ValueError("Unrecognized data type for 'targets': {}".format(targets))
-    #     if episode % (change_frequency) == 0:
-    #         self.reward_func = Reward_func(target, reward_settings)
-
-    # def log_init(self, episodes, reward_func):
-    #     self.log_num += 1
-    #     # Console output
-    #     if self.verbose:
-    #         print("Starting training [algo = {}, reward = {}, version {}] for {} episodes...".format(
-    #             self.__class__.__name__, reward_func.__class__.__name__, self.log_num, episodes))
-    #     # Logging file output
-    #     if self.log_dir is not None:
-    #         with open(os.path.join(self.log_dir, "logs{}".format(self.log_num)), "w") as f:
-    #             print("Starting training for {} episodes...".format(episodes), file=f)
-    #             print("Algorithm: {}".format(self.__class__.__name__), file=f)
-    #             print("Reward function:  {}\n\n\n".format(reward_func), file=f)
-    #
-
-    # def log(self, episode, reward_func, start_time):
-    #     # to console
-    #     if self.verbose:
-    #         print("Episode {} completed for {}, {}_{}".format(
-    #             episode + 1, self.__class__.__name__, reward_func.__class__.__name__, self.log_num))
-    #
-    #     # to log file and Tensorboard
-    #     if self.log_dir is not None:
-    #         with open(os.path.join(self.log_dir, "logs{}".format(self.log_num)), "a") as f:
-    #             current_time = datetime.timedelta(seconds=(time.time()-start_time))
-    #             print("Episode {}: [time:  {}]\n".format(episode+1, str(current_time)), file=f)
-    #             score = self.assess(reward_func, episode=episode, print=True, file=f)
-    #             print("\n\n\n", file=f)
-    #             # log to Tensorboard
-    #             self.writer.add_scalars(self.log_dir, {'rewards': score}, episode)
-
-# def multi_train(self, Reward_func, targets, reg_init_freq, episodes):
-    #     ''' Performs multiple trainings on the same task, but with different target values and register initializations.
-    #     Arg types:
-    #     - reward_func: [string] name of a Reward_function class
-    #     - targets: [integer] number of random target values to generate
-    #     - reg_init_freq: [integer] indicates after how many episodes register initializations are randomly reset.
-    #                     A value of O means that all registers are initialized at 0.
-    #     - episodes: [integer] the total number of episodes done, divided among all training subtasks'''
-    #
-    #     if isinstance(targets, list) and isinstance(targets[0], np.ndarray):
-    #         num_targets = len(targets)
-    #     elif episodes % num_targets == 0:
-    #         num_targets = targets
-    #         episodes_per_target = episodes // num_targets
-    #         targets = [None for _ in range(num_targets)] # 'None' means the Reward_function object is constructed with random target values
-    #     else:
-    #         raise ValueError("Need episodes({}) % num_targets({}) == 0".format(episodes, num_targets))
-    #
-    #     if reg_init_freq < 0 :
-    #         raise ValueError("Negative reg_init_freq: {}".format(reg_init_freq))
-    #     elif reg_init_freq == 0:
-    #         zero_init = True
-    #         reg_init = np.zeros(CWCFG.NUM_REGISTERS, dtype=int)
-    #         reg_init_freq = episodes_per_target
-    #     elif episodes_per_target % reg_init_freq == 0:
-    #         zero_init = False
-    #     else:
-    #         raise ValueError("Need (episodes({}) // num_targets({})) % reg_init_freq({}) == 0".format(episodes, num_targets, reg_init_freq))
-    #
-    #     # Create training tasks
-    #     for target in targets:
-    #         reward = reward_func(target)
-    #         for _ in range(episodes_per_target // reg_init_freq):
-    #             if not zero_init:
-    #                 reg_init = np.random.randint(0, 256, CWCFG.NUM_REGISTERS)
-    #             self.tasks.append(Task(reward, reg_init, 0, -float('Inf')))
-    #
-    #     task = self.tasks[0]
-    #     self.train(reward, reg_init, reg_init_freq)
-    #     self.save("End_multi_training", best=False)
