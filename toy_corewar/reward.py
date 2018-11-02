@@ -48,6 +48,8 @@ class Specific_register_values(Reward_function):
         else:
             self.reward = self.negative_reward
             self.maximum = 0
+        self.circular = settings['circular']
+        self.positive = settings['positive']
         self.cumulative = settings['cumulative']
 
     def positive_reward(self, env):
@@ -58,9 +60,10 @@ class Specific_register_values(Reward_function):
 
     def negative_reward(self, env):
         final_dist = self.distance(env.register_states[-1], self.targets)
-        if self.cumulative and not env.done:
+        if self.cumulative or env.done:
+            return -final_dist.sum()
+        else:
             return 0
-        return -final_dist.sum()
 
     def performance(self, env):
         dist = self.distance(env.register_states[-1], self.targets)

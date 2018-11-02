@@ -12,7 +12,7 @@ class ToyCorewar():
         else:
             self.registers = np.zeros(num_registers, dtype=int)
         self.memory = np.zeros(mem_size, dtype=int)
-    
+
     def load_player(self, player):
         i = 0
         for byte in player:

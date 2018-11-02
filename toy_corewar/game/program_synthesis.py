@@ -25,7 +25,7 @@ class Instruction():
         if self.opcode == 1:
             var_embedding[1][self.arg2-1] = 1
             val_embedding[0] = self.arg1
-        else:
+        elif self.opcode != 0:
             var_embedding[0][self.arg1-1] = 1
             var_embedding[1][self.arg2-1] = 1
             if self.arg3 is not None:
@@ -49,7 +49,10 @@ class Instruction():
         print(labels[self.opcode].ljust(4), file=file, end=' ')
         print("{} {} {}".format(str(self.arg1).ljust(4), str(self.arg2).ljust(4), str(self.arg3).ljust(4)),
              file=file, end=end)
-        
+
+    def isnull(self):
+        return self.opcode == 0
+
 
 class Program():
     def __init__(self, instructions=None, maxlen=CWCFG.MAX_LENGTH):
@@ -58,10 +61,13 @@ class Program():
     
     def add_instruction(self, instruction):
         '''Adds an instruction to the program and returns a value for the 'done' 
-        parameter of the Environment (i.e. True if Program reached max length'''
+        parameter of the Environment (i.e. True if Program reached max length)'''
         assert len(self.instructions) < self.maxlen
         self.instructions.append(instruction)
-        return len(self.instructions) == self.maxlen
+        dead_end = len(self.instructions) == self.maxlen
+        stop = instruction.isnull()
+        done = dead_end or stop
+        return dead_end, stop, done
     
     def to_byte_sequence(self):
         # output np array corresponding to the sequence of bytes to load in ToyCorewar

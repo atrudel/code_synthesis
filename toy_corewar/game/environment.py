@@ -21,38 +21,26 @@ class Env():
     def __init__(self, reward_func):
         '''reward_func is an instantiated Reward_function object'''
         self.reward_func = reward_func
-        self.best_score = -math.inf
     
     def step(self, action):
         '''action is a number between 0 and action_space_n'''
         # Check if episode is terminated
         assert not self.done, "Can't add an action to a finished episode. Call Env.reset()"
-        
-        # Convert action to a program instruction
-        instruction = Env.interpret_action(action) if isinstance(action, int) else action
-        
-        # # Handle the no-action case
-        # if opcode is None:
-        #     self.done = True
-        #     if len(self.program) == 0:
-        #         self.register_states.append(self.register_states[0])
-        #     reward = self.reward_func(self)
 
-        # else:
-        # Add instruction to the program
-        self.done = self.program.add_instruction(instruction)
+        instruction = Env.interpret_action(action) if isinstance(action, int) else action
+
+        dead_end, stop, self.done = self.program.add_instruction(instruction)
+
         cw = ToyCorewar()
         cw.load_player(self.program.to_byte_sequence())
         cw.run()
         self.register_states.append(cw.reg_state())
+
         reward = self.reward_func(self)
         self.rewards.append(reward)
+        if stop and self.reward_func.cumulative:
+            reward += self.rollout(dead_end)
         self.total_reward += reward
-
-        # Record best
-        if self.done:
-            self.performance = self.reward_func.performance(self)
-            self.best_score = max(self.performance, self.best_score)
 
         # Create and format the state
         state = self.build_state()
@@ -70,7 +58,20 @@ class Env():
         self.register_states = [self.reg_init]
         self.done = False
         return self.build_state()
-    
+
+    def rollout(self, dead_end):
+        rollout_reward = 0
+        while not dead_end:
+            dead_end, _, _ = self.program.add_instruction(Instruction(0, None, None, None))
+            cw = ToyCorewar()
+            cw.load_player(self.program.to_byte_sequence())
+            cw.run()
+            self.register_states.append(cw.reg_state())
+            reward = self.reward_func(self)
+            self.rewards.append(reward)
+            rollout_reward += reward
+        return rollout_reward
+
     def build_state(self):
         # Take self.program and self.cw to build a representation of the state
         program_state = self.program.to_embedding_sequence()
@@ -113,7 +114,8 @@ class Env():
             arg3 = div + 1
         # end (no instruction)
         else:
-            return (None, None, None, None)
+            opcode = 0
+            arg1 = arg2 = arg3 = None
         return Instruction(opcode, arg1, arg2, arg3)
 
 
