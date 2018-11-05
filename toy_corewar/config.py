@@ -46,4 +46,4 @@ class Cfg(object):
 		return retrieve(vars(self))
 
 # Hardware usage
-DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+DEVICE = 'cpu'

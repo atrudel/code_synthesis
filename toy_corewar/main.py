@@ -2,6 +2,7 @@ import config
 config.load("config.json")
 cfg = config.get_cfg()
 
+import torch
 import os, shutil
 import reward
 import multiprocessing
@@ -31,8 +32,11 @@ if __name__ == '__main__':
     parser.add_argument('-f', '--force', help="force overwriting of the log folder", action='store_true')
     parser.add_argument('-t', '--training', help="specify custom training file", default="training.json")
     parser.add_argument('-j', '--jobs', type=int, help="number of concurrent jobs", default=multiprocessing.cpu_count())
+    parser.add_argument('--cuda', help="enable cuda", action='store_true')
     args = parser.parse_args()
 
+    if args.cuda:
+        config.DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
     with open(args.training) as f:
         trainings = json.load(f)
 
