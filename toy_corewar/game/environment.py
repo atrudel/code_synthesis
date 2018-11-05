@@ -42,7 +42,9 @@ class Env():
             reward += self.rollout(dead_end)
         self.total_reward += reward
 
-        # Create and format the state
+        if self.done:
+            self.performance = self.reward_func.performance(self)
+
         state = self.build_state()
 
         return state, reward, self.done, None
