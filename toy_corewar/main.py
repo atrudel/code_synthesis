@@ -30,7 +30,7 @@ if __name__ == '__main__':
     parser.add_argument('name', help="name of the experiment")
     parser.add_argument('-f', '--force', help="force overwriting of the log folder", action='store_true')
     parser.add_argument('-t', '--training', help="specify custom training file", default="training.json")
-    parser.add_argument('--nomultiprocessing', help="run the program using a single process", action='store_true')
+    parser.add_argument('-j', '--jobs', type=int, help="number of concurrent jobs", default=multiprocessing.cpu_count())
     args = parser.parse_args()
 
     with open(args.training) as f:
@@ -49,10 +49,14 @@ if __name__ == '__main__':
     for training in trainings:
         training['root_dir'] = root_dir
 
-    if not args.nomultiprocessing:
+    if args.jobs > 1:
         multiprocessing.set_start_method('spawn')
-        with Pool(processes=multiprocessing.cpu_count()) as pool:
-            pool.map(unpack, trainings)
+        with Pool(processes=args.jobs) as pool:
+            try:
+                pool.map(unpack, trainings)
+            except KeyboardInterrupt:
+                pool.terminate()
+            pool.join()
             # pool.starmap(run_multi_training, trainings)
     else:
         for training in trainings:

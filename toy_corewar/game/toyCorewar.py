@@ -1,5 +1,4 @@
 import numpy as np
-from numba import jit
 import config
 
 CFG = config.get_cfg().settings.toy_corewar
@@ -14,7 +13,6 @@ class ToyCorewar():
             self.registers = np.zeros(num_registers, dtype=int)
         self.memory = np.zeros(mem_size, dtype=int)
     
-    @jit
     def load_player(self, player):
         i = 0
         for byte in player:
