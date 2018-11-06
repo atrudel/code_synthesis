@@ -94,7 +94,8 @@ class DQN_Agent(Agent):
                 s = s_prime
                 
                 # EXPERIENCE REPLAY (every LEARNING_FREQth time step after learning starts) 
-                if (self.total_episodes > self.learning_starts and 
+                if (self.total_episodes > self.learning_starts and
+                    len(self.replay_buffer) >= self.batch_size and
                     (episode * CWCFG.MAX_LENGTH + t) % self.learning_freq == 0):
                     self.experience_replay()
                 
