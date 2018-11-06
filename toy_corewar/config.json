@@ -51,10 +51,10 @@
         "AC": {
             "agent": "AC_Agent",
             "parameters": {
-                "h_size": 35,
+                "h_size": 50,
                 "middle_size": 128,
-                "lstm_layers": 2,
-                "lr": 0.01,
+                "lstm_layers": 1,
+                "lr": 0.001,
                 "gamma": 0.99
             }
         }

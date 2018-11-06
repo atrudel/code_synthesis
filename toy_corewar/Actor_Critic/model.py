@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import config
+import numpy as np
 
 CFG = config.get_cfg()
 CWCFG = CFG.settings.toy_corewar
