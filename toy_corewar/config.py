@@ -44,6 +44,3 @@ class Cfg(object):
 
 	def todict(self):
 		return retrieve(vars(self))
-
-# Hardware usage
-DEVICE = 'cpu'

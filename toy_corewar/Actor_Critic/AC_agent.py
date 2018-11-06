@@ -8,7 +8,6 @@ import torch.optim as optim
 from torch.distributions import Categorical
 from game.environment import Env
 import config
-from config import DEVICE
 from DQN.DQN_utils import state_to_tensors
 from task_manager import Task_Manager
 
@@ -24,7 +23,7 @@ class AC_Agent(Agent):
                  gamma,
                  verbose=False, log_dir=None):
         Agent.__init__(self, verbose, log_dir)
-        self.model = AC_Model(h_size, middle_size, lstm_layers).to(DEVICE)
+        self.model = AC_Model(h_size, middle_size, lstm_layers).to(CFG.settings.DEVICE)
         self.best_model = AC_Model(h_size, middle_size, lstm_layers)
         self.best_model.load_state_dict(self.model.state_dict())
         self.optimizer = optim.Adam(self.model.parameters(), lr=lr)
@@ -57,12 +56,12 @@ class AC_Agent(Agent):
             for r in self.rewards[::-1]:
                 R = r + self.gamma * R
                 rewards.insert(0, R)
-            rewards = torch.tensor(rewards, device = DEVICE)
+            rewards = torch.tensor(rewards, device = CFG.settings.DEVICE)
             rewards = (rewards - rewards.mean()) / (rewards.std() + eps)
             for (log_prob, value), r in zip(saved_actions, rewards):
                 advantage = r - value.item()
                 policy_losses.append(-log_prob * advantage)
-                value_losses.append(F.smooth_l1_loss(value.squeeze(1), torch.tensor([r], device = DEVICE)))
+                value_losses.append(F.smooth_l1_loss(value.squeeze(1), torch.tensor([r], device = CFG.settings.DEVICE)))
             self.optimizer.zero_grad()
             loss = torch.stack(policy_losses).sum() + torch.stack(value_losses).sum()
             loss.backward()

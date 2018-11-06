@@ -1,5 +1,6 @@
 {
     "settings": {
+        "DEVICE": "cpu",
         "ASSESS_FREQ": 200,
         "LOG_FREQ": 1000,
         "SAVE_FREQ": 1000,

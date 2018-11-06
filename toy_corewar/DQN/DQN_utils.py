@@ -1,7 +1,9 @@
 import torch
 from collections import deque, namedtuple
-from config import *
 from game.environment import Env
+import config
+
+CFG = config.get_cfg()
 
 Transition = namedtuple('Transition',
                         ('state', 'action', 'reward', 'next_state', 'done'))
@@ -34,8 +36,8 @@ class LinearSchedule(object):
 
 def state_to_tensors(state):
     prog_state, mem_state = state
-    prog = torch.tensor(prog_state).unsqueeze(1).to(DEVICE)
-    mem = torch.tensor(mem_state).view(-1).unsqueeze(0).to(DEVICE)
+    prog = torch.tensor(prog_state).unsqueeze(1).to(CFG.settings.DEVICE)
+    mem = torch.tensor(mem_state).view(-1).unsqueeze(0).to(CFG.settings.DEVICE)
     return prog, mem
 
 def batch_to_tensors(batch):
