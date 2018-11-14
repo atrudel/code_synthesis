@@ -110,7 +110,7 @@ class Agent:
         np.random.seed(0)
         performances = []
         total_rewards = []
-        if log and log_dir:
+        if log and self.log_dir:
             filename = os.path.join(self.log_dir, "{:07}_Generalization".format(self.total_episodes))
         else:
             filename = os.devnull

@@ -143,7 +143,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run a parameter search with Sigopt')
     parser.add_argument('name', help="name of the search series")
     parser.add_argument('-f', '--force', help="force overwriting of the log folder", action='store_true')
-    parser.add_argument('-t', '--training', help="specify custom training file", default="training_sigopt.json")
     args = parser.parse_args()
 
     os.makedirs("Parameter_search", exist_ok=True)
