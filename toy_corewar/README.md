@@ -21,7 +21,7 @@ Toy Corewar has 4 registers, whose values can range from 0 to 255.
 - tensorboardX
 - sigopt
 
-`pip install numpy torch tensorboardX sigopt`
+`install -r requirements.txt`
 
 ## Usage
 Hot to launch a training:
