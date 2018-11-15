@@ -1,0 +1,18 @@
+Evaluation over 1 tasks
+Algorithm: DQN_Agent
+Time: 2:24:46.822122
+Task:  (Specific_register_values: target=[17  0 12 29])
+Initialization: [0 0 0 0]
+ld   17   1    None 	[  17   0   0   0 ]    17
+add  1    1    4    	[  17   0   0  34 ]    24
+ld   13   3    None 	[  17   0  13  34 ]    11
+st   4    4    None 	[  17   0  13  34 ]     0
+add  3    1    4    	[  17   0  13  30 ]     4
+-------------------------------------
+                     Total reward: 56
+                      Performance: -2
+
+
+
+Mean performance: -2.0
+Mean reward: 56.0
