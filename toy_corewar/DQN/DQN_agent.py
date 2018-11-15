@@ -32,8 +32,8 @@ class DQN_Agent(Agent):
         Agent.__init__(self, verbose, log_dir)
         
         # Initialize neural networks
-        self.Q = Dueling_DQN(h_size, middle_size, lstm_layers).to(DEVICE)
-        self.Q_target = Dueling_DQN(h_size, middle_size, lstm_layers).to(DEVICE)
+        self.Q = Dueling_DQN(h_size, middle_size, lstm_layers).to(CFG.settings.DEVICE)
+        self.Q_target = Dueling_DQN(h_size, middle_size, lstm_layers).to(CFG.settings.DEVICE)
         self.model = self.Q # alias which is used in the parent class
         self.best_model = Dueling_DQN(h_size, middle_size, lstm_layers)
         self.Q_target.load_state_dict(self.Q.state_dict())
@@ -123,10 +123,10 @@ class DQN_Agent(Agent):
         # Extract each batch of elements from the sample of transitions
         batch = Transition(*zip(*transitions))
         state_batch = batch_to_tensors(batch.state)
-        action_batch = torch.LongTensor(batch.action).unsqueeze(1).to(DEVICE)
-        reward_batch = torch.tensor(batch.reward, dtype=torch.float).to(DEVICE)
+        action_batch = torch.LongTensor(batch.action).unsqueeze(1).to(CFG.settings.DEVICE)
+        reward_batch = torch.tensor(batch.reward, dtype=torch.float).to(CFG.settings.DEVICE)
         next_state_batch = batch_to_tensors(batch.next_state)
-        done_batch = torch.tensor(batch.done, dtype=torch.float).to(DEVICE)   
+        done_batch = torch.tensor(batch.done, dtype=torch.float).to(CFG.settings.DEVICE)   
         
         # Get the current network's estimations for the q-values of all (state, action)
         # pairs in the batch
