@@ -1,9 +1,14 @@
+import os, shutil
 import config
-config.load("config.json")
-cfg = config.get_cfg()
+try:
+    path = os.path.dirname(__file__)
+    config.load(os.path.join(path, "config.json"))
+    cfg = config.get_cfg()
+except:
+    print("cannot load config.json")
+    exit()
 
 import torch
-import os, shutil
 import reward
 import multiprocessing
 from multiprocessing import Pool
