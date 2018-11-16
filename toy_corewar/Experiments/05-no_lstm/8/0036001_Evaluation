@@ -1,0 +1,31 @@
+Evaluation over 2 tasks
+Algorithm: DQN_Agent
+Time: 1:41:00.212507
+Task:  (Specific_register_values: target=[  0  10  30 250])
+Initialization: [0 0 0 0]
+ld  14 3  None 	[   0   0  14   0 ]     0
+ld  14 3  None 	[   0   0  14   0 ]     0
+ld  14 3  None 	[   0   0  14   0 ]     0
+ld  14 3  None 	[   0   0  14   0 ]     0
+ld  14 3  None 	[   0   0  14   0 ]   -32
+-------------------------------------
+                    Total reward: -32
+                     Performance: -32
+
+
+
+Task:  (Specific_register_values: target=[  5 129 255   0])
+Initialization: [0 0 0 0]
+add 2  3  3    	[   0   0   0   0 ]     0
+add 2  3  3    	[   0   0   0   0 ]     0
+add 2  3  3    	[   0   0   0   0 ]     0
+add 2  3  3    	[   0   0   0   0 ]     0
+add 2  3  3    	[   0   0   0   0 ]  -133
+-------------------------------------
+                   Total reward: -133
+                    Performance: -133
+
+
+
+Mean performance: -82.5
+Mean reward: -82.5

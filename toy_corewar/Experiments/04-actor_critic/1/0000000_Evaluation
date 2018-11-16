@@ -1,0 +1,18 @@
+Evaluation over 1 tasks
+Algorithm: AC_Agent
+Time: 0:00:01.658712
+Task:  (Specific_register_values: target=[  0  10  30 250])
+Initialization: [0 0 0 0]
+add 2  3  2    	[   0   0   0   0 ]  -290
+ld  14 3  None 	[   0   0  14   0 ]  -276
+ld  17 3  None 	[   0   0  17   0 ]  -273
+add 3  1  3    	[   0   0  17   0 ]  -273
+ld  0  4  None 	[   0   0  17   0 ]  -273
+-------------------------------------
+                  Total reward: -1385
+                    Performance: -273
+
+
+
+Mean performance: -273.0
+Mean reward: -1385.0

@@ -1,0 +1,314 @@
+[
+    {
+        "targets": {
+            "alternate_freq": 0,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": false,
+            "positive": false,
+            "cumulative": false
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 1
+    },
+    {
+        "targets": {
+            "alternate_freq": 5,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ],
+                [
+                    5,
+                    129,
+                    255,
+                    0
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": false,
+            "positive": false,
+            "cumulative": false
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 2
+    },
+    {
+        "targets": {
+            "alternate_freq": 0,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": true,
+            "positive": false,
+            "cumulative": false
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 3
+    },
+    {
+        "targets": {
+            "alternate_freq": 5,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ],
+                [
+                    5,
+                    129,
+                    255,
+                    0
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": true,
+            "positive": false,
+            "cumulative": false
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 4
+    },
+    {
+        "targets": {
+            "alternate_freq": 0,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": false,
+            "positive": false,
+            "cumulative": true
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 5
+    },
+    {
+        "targets": {
+            "alternate_freq": 5,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ],
+                [
+                    5,
+                    129,
+                    255,
+                    0
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": false,
+            "positive": false,
+            "cumulative": true
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 6
+    },
+    {
+        "targets": {
+            "alternate_freq": 0,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": true,
+            "positive": false,
+            "cumulative": true
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 7
+    },
+    {
+        "targets": {
+            "alternate_freq": 5,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ],
+                [
+                    5,
+                    129,
+                    255,
+                    0
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": true,
+            "positive": false,
+            "cumulative": true
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 8
+    },
+    {
+        "targets": {
+            "alternate_freq": 0,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": false,
+            "positive": true,
+            "cumulative": true
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 9
+    },
+    {
+        "targets": {
+            "alternate_freq": 5,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ],
+                [
+                    5,
+                    129,
+                    255,
+                    0
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": false,
+            "positive": true,
+            "cumulative": true
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 10
+    },
+    {
+        "targets": {
+            "alternate_freq": 0,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": true,
+            "positive": true,
+            "cumulative": true
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 11
+    },
+    {
+        "targets": {
+            "alternate_freq": 5,
+            "values": [
+                [
+                    0,
+                    10,
+                    30,
+                    250
+                ],
+                [
+                    5,
+                    129,
+                    255,
+                    0
+                ]
+            ]
+        },
+        "reward_settings": {
+            "circular": true,
+            "positive": true,
+            "cumulative": true
+        },
+        "reward_func": "Specific_register_values",
+        "algo": "AC",
+        "reg_inits": null,
+        "episodes": 500000,
+        "id": 12
+    }
+]
