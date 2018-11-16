@@ -1,5 +1,5 @@
 ## Game of Life Two-player
-A reinforcement learning model for two-player Game of Life based on Deepmind's AlphaGo Zero.
+A reinforcement learning model for the Two-player Game of Life based on Deepmind's AlphaGo Zero.
 
 ### Rules
 Board size: the size of the board that the players play on
