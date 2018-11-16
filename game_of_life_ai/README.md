@@ -2,10 +2,10 @@
 A reinforcement learning model for the Two-player Game of Life based on Deepmind's AlphaGo Zero.
 
 ### Rules
-Board size: the size of the board that the players play on
-Player size: the number of initial tiles that each player starts with
-Cycles: the number of cycles to run before you decide who wins
-Winner: the player with the most amount of tiles at the end wins
+- Board size: the size of the board that the players play on
+- Player size: the number of initial tiles that each player starts with
+- Cycles: the number of cycles to run before you decide who wins
+- Winner: the player with the most amount of tiles at the end wins
 
 ### Reinforcement Learning environment
 - The agent is made out of three neural networks: a feature extractor, a value network, and a policy network. 
